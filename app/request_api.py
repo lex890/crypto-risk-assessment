@@ -29,7 +29,7 @@ def api_request(api_key, api_choice, currency_choice):
 def api_request_cmc(api_key, currency_choice):
     parameters = {
         'start': '1',
-        'limit': '14',
+        'limit': '1',
         'convert': currency_choice
     }
     headers = {
