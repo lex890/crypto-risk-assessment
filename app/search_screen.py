@@ -37,8 +37,33 @@ def format_large_number(num):
         return str(int(num))  # Return whole number if < 1,000
 
 
-def search_crypto(main_window, data, current_page, rows_per_page, user_search, csvdata, search_terms, api_key, currency_choice, filepath, threshold=60, limit=10):
-    query = user_search.strip()
+def search_crypto(main_window, data, current_page, rows_per_page, user_search, csvdata, search_terms, api_key, currency_choice, filepath, threshold=85, limit=10):
+    query = user_search.strip().upper()  # Convert to uppercase for consistent comparison
+    
+    # First try exact matches
+    exact_matches = []
+    for row in csvdata:
+        if (row['Name'].upper() == query or row['Symbol'].upper() == query):
+            exact_matches.append((
+                row['#'],
+                row['Name'],
+                row[f'Current Price ({currency_choice})'],
+                row['1h%'],
+                row['24h%'],
+                row['7d%'],
+                row[f'Market Cap ({currency_choice})'],
+                row['Logo'],
+                row['Symbol'],
+                row['Description'],
+                row['Creation Date'],
+                row['Website'],
+                row['Source Code']
+            ))
+    
+    if exact_matches:
+        return exact_matches
+    
+    # If no exact matches, try fuzzy matching with higher threshold
     matches = process.extract(query, search_terms, limit=limit)
     seen = set()
     result_list = []
@@ -51,11 +76,11 @@ def search_crypto(main_window, data, current_page, rows_per_page, user_search, c
                     result_list.append((
                         row['#'],
                         row['Name'],
-                        row['Current Price (USD)'],
+                        row[f'Current Price ({currency_choice})'],
                         row['1h%'],
                         row['24h%'],
                         row['7d%'],
-                        row['Market Cap (USD)'],
+                        row[f'Market Cap ({currency_choice})'],
                         row['Logo'],
                         row['Symbol'],
                         row['Description'],
@@ -63,21 +88,24 @@ def search_crypto(main_window, data, current_page, rows_per_page, user_search, c
                         row['Website'],
                         row['Source Code']
                     ))
+    
     if not result_list:
-        print(api_key, query, currency_choice, filepath)
+        # Only call API if no matches found in local data
+        print(f"Searching API for: {query}")
         output_tuple = req.search_via_api(api_key, query, currency_choice, filepath)
-        result_list.append(output_tuple)
-        result_list_dict = han.convert_to_dict(result_list, currency_choice)
-        result_list_scores = shr.evaluate_cryptos(result_list_dict, currency_choice)
-        han.export_to_csv(result_list_scores)
-        _, new_data_list = han.read_csv('./data/temp.csv')
-        han.append_csv(filepath, new_data_list)
-        
-        _, data = han.read_csv(filepath)
-        main_window['-TABLE-'].update(values=msc.get_page_data(data, current_page, rows_per_page))
-        main_window['-PAGENO-'].update(str(current_page))
+        if output_tuple:  # Only proceed if API call was successful
+            result_list.append(output_tuple)
+            result_list_dict = han.convert_to_dict(result_list, currency_choice)
+            result_list_scores = shr.evaluate_cryptos(result_list_dict, currency_choice)
+            han.export_to_csv(result_list_scores)
+            _, new_data_list = han.read_csv('./data/temp.csv')
+            han.append_csv(filepath, new_data_list)
+            
+            _, data = han.read_csv(filepath)
+            main_window['-TABLE-'].update(values=msc.get_page_data(data, current_page, rows_per_page))
+            main_window['-PAGENO-'].update(str(current_page))
 
-    return result_list if result_list else "No good match found."
+    return result_list if result_list else "No matches found. Please check your spelling or try a different search term."
 
 
 
@@ -166,15 +194,6 @@ def generate_results(result, user_search):
                     f'No Results for: {user_search}', 
                     font=('印品鸿蒙体', 16),
                     text_color="#aaa8a8"
-                ),
-                sg.Button(
-                    '',
-                    image_filename='./images/closeNR.png',
-                    image_size=(35, 35),
-                    button_color=(sg.theme_background_color(), sg.theme_background_color()),
-                    border_width=0,
-                    key='-CBUTTON-',
-                    pad=((450, 0), (0, 50))
                 )
             ]
         ]

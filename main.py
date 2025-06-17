@@ -31,7 +31,7 @@ def handle_keystore(login_window):
     login_window['-API-'].update(value=new_api_key)
     sg.popup_auto_close(f'Pasted the API Key for {'CoinMarketCap' if api_choice == 1 else 'CoinGecko'}', auto_close_duration=2)
 
-def handle_save_key(login_window, lw_values):
+def handle_save_key(lw_values):
     api_key = lw_values.get('-API-', '').strip()
     imagepath = current_image['-IMAGE-']
     api_choice = app.get_api_choice(imagepath)
@@ -178,6 +178,7 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
 
         elif mw_event in (sg.WIN_CLOSED, 'Exit'):
             print('closing now')
+            os.close(filepath)
             main_window.close()
             return True
 
@@ -192,14 +193,13 @@ def main():
         print(lw_event, lw_values)
 
         if lw_event in (sg.WIN_CLOSED, 'Exit'):
-            
             break
         elif lw_event == '-CRYPTO-LOGO-TOGGLE-':
             handle_crypto_toggle(login_window)
         elif lw_event == '-KEYSTORE-':
             handle_keystore(login_window)
         elif lw_event == '-SAVEKEY-':
-            handle_save_key(login_window, lw_values)
+            handle_save_key(lw_values)
         elif lw_event == 'Clear':
             login_window['-API-'].update('')
         elif lw_event == 'Confirm':
