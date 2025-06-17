@@ -111,7 +111,7 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 try:
                     current_page += 1
                     new_data = app.next_screen_loading(data, api_key, api_choice, currency_choice)
-                    print('new_data: ', new_data)
+                    print('new_data: ', new_data, type(new_data))
                     if new_data:
                         # creates new csv file with new data
                         app.export_to_csv(new_data)
@@ -123,8 +123,6 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                         _, data = app.read_csv(filepath)
                         main_window['-TABLE-'].update(values=app.get_page_data(data, current_page, rows_per_page))
                         main_window['-PAGENO-'].update(str(current_page))
-
-                        os.remove('./data/temp.csv')  # Clean up temporary file
                     else:
                         sg.popup_auto_close('No more cryptocurrencies available.', auto_close_duration=2)
                 except Exception as e:
@@ -156,8 +154,8 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
             user_search = mw_values['-SEARCHBAR-']
             if user_search == '':
                 continue
-
-            search_window, key_to_data = app.search_screen(user_search, filepath)
+                (main_window, current_page)
+            search_window, key_to_data = app.search_screen(main_window, data, current_page, rows_per_page, user_search, filepath, api_key, currency_choice)
             while True:
                 sw_event, _ = search_window.read()
                 if sw_event == '-CBUTTON-':
@@ -165,14 +163,18 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 elif user_search == '' or sw_event in (sg.WIN_CLOSED, 'Exit'):
                     search_window.close()
                     break
-                elif isinstance(sw_event, str):
+                elif isinstance(sw_event, str): # image or logo clicked
                     match = pattern.match(sw_event)
+                    print('match: ', match)
                     if match:
+                        _, data = app.read_csv(filepath)
                         current_row = int(key_to_data[sw_event][0]) - 1
                         app.update_risk_window(main_window, key_to_data[sw_event])
                         app.risk_assessment_window(main_window, data, current_row)
                         search_window.close()
                         break
+                    else:
+                        sg.popup('This is from API')
 
         elif mw_event in (sg.WIN_CLOSED, 'Exit'):
             print('closing now')

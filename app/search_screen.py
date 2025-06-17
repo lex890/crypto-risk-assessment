@@ -2,6 +2,10 @@ import FreeSimpleGUI as sg
 from fuzzywuzzy import process
 import csv
 from . import get_images as img
+from . import request_api as req
+from . import csv_handler as han
+from . import score_handler as shr
+from . import main_screen as msc
 
 def load_crypto_data(csv_path):
     with open(csv_path, newline='', encoding='utf-8') as csvfile:
@@ -33,15 +37,15 @@ def format_large_number(num):
         return str(int(num))  # Return whole number if < 1,000
 
 
-def search_crypto(query, data, search_terms, threshold=60, limit=10):
-    query = query.strip()
+def search_crypto(main_window, data, current_page, rows_per_page, user_search, csvdata, search_terms, api_key, currency_choice, filepath, threshold=60, limit=10):
+    query = user_search.strip()
     matches = process.extract(query, search_terms, limit=limit)
     seen = set()
     result_list = []
     
     for match, score in matches:
         if score >= threshold:
-            for row in data:
+            for row in csvdata:
                 if (row['Name'] == match or row['Symbol'] == match) and row['Symbol'] not in seen:
                     seen.add(row['Symbol'])
                     result_list.append((
@@ -59,17 +63,33 @@ def search_crypto(query, data, search_terms, threshold=60, limit=10):
                         row['Website'],
                         row['Source Code']
                     ))
+    if not result_list:
+        print(api_key, query, currency_choice, filepath)
+        output_tuple = req.search_via_api(api_key, query, currency_choice, filepath)
+        result_list.append(output_tuple)
+        result_list_dict = han.convert_to_dict(result_list, currency_choice)
+        result_list_scores = shr.evaluate_cryptos(result_list_dict, currency_choice)
+        han.export_to_csv(result_list_scores)
+        _, new_data_list = han.read_csv('./data/temp.csv')
+        han.append_csv(filepath, new_data_list)
+        
+        _, data = han.read_csv(filepath)
+        main_window['-TABLE-'].update(values=msc.get_page_data(data, current_page, rows_per_page))
+        main_window['-PAGENO-'].update(str(current_page))
 
     return result_list if result_list else "No good match found."
 
 
-def search_screen(user_search, file_path):
+
+def search_screen(main_window, data, current_page, rows_per_page, user_search, filepath, api_key, currency_choice):
     if not user_search.strip():
         return sg.Window("Invalid", [[sg.Text("No search performed.")]], finalize=True)
 
-    csv_data = load_crypto_data(file_path)
+    csv_data = load_crypto_data(filepath)
     search_terms = get_search_terms(csv_data)
-    result = search_crypto(user_search, csv_data, search_terms)
+    result = search_crypto(main_window, data, current_page, rows_per_page, user_search, csv_data, search_terms, api_key, currency_choice, filepath)
+    
+    print('this is the result: ', result)
     search_header, search_window, key_to_data = generate_results(result, user_search)
 
     if key_to_data:

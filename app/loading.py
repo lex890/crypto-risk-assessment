@@ -7,7 +7,8 @@ from . import request_api as req
 def show_loading_window():
     layout = [
         [sg.Text('Contacting API...', font=('Helvetica', 14))],
-        [sg.ProgressBar(100, orientation='h', size=(30, 20), key='-PROG-')]
+        [sg.ProgressBar(100, orientation='h', size=(30, 20), key='-PROG-')],
+        [sg.Text('', key='-STATUS-', font=('Helvetica', 10))]
     ]
     return sg.Window('Loading', layout, finalize=True, keep_on_top=True, no_titlebar=True)
 
@@ -32,16 +33,22 @@ def show_dimmed_overlay():
 # Main wrapper function
 def login_loading(api_key, api_choice, currency_choice):
     result_holder = {}
+    progress_holder = {'value': 0, 'status': 'Initializing...'}
 
     # Create and show the loading screen first
     loading_win = show_loading_window()
     prog_bar = loading_win['-PROG-']
-    i = 0
+    status_text = loading_win['-STATUS-']
 
     # Background API thread
     def target():
         try:
-            result_holder['value'] = req.api_request(api_key, api_choice, currency_choice)
+            # Create a progress callback function
+            def update_progress(progress, status):
+                progress_holder['value'] = progress
+                progress_holder['status'] = status
+
+            result_holder['value'] = req.api_request(api_key, api_choice, currency_choice, progress_callback=update_progress)
         except Exception as e:
             result_holder['error'] = e
 
@@ -50,8 +57,10 @@ def login_loading(api_key, api_choice, currency_choice):
 
     while True:
         event, _ = loading_win.read(timeout=100)
-        prog_bar.UpdateBar(i % 100)
-        i += 5
+        
+        # Update progress bar and status text
+        prog_bar.UpdateBar(progress_holder['value'])
+        status_text.update(progress_holder['status'])
 
         if not thread_started:
             thread = threading.Thread(target=target, daemon=True)
@@ -73,17 +82,29 @@ def login_loading(api_key, api_choice, currency_choice):
     
 def next_screen_loading(data, api_key, api_choice, currency_choice):
     result_holder = {}
+    progress_holder = {'value': 0, 'status': 'Initializing...'}
 
     # Create and show the loading screen
     overlay_win = show_dimmed_overlay()
     loading_win = show_loading_window()
     prog_bar = loading_win['-PROG-']
-    i = 0
+    status_text = loading_win['-STATUS-']
 
     # Background thread for fetching new data
     def target():
         try:
-            result_holder['new_data'] = req.fetch_next_cryptocurrencies(len(data), api_key, api_choice, currency_choice)
+            # Create a progress callback function
+            def update_progress(progress, status):
+                progress_holder['value'] = progress
+                progress_holder['status'] = status
+
+            result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                len(data), 
+                api_key, 
+                api_choice, 
+                currency_choice,
+                progress_callback=update_progress
+            )
         except Exception as e:
             result_holder['error'] = e
 
@@ -91,8 +112,10 @@ def next_screen_loading(data, api_key, api_choice, currency_choice):
 
     while True:
         event, _ = loading_win.read(timeout=100)
-        prog_bar.UpdateBar(i % 100)
-        i += 5
+        
+        # Update progress bar and status text
+        prog_bar.UpdateBar(progress_holder['value'])
+        status_text.update(progress_holder['status'])
 
         if not thread_started:
             thread = threading.Thread(target=target, daemon=True)

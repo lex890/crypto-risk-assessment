@@ -37,25 +37,13 @@ def draw_figure(canvas_elem, figure, key, data_for_chart, window, is_main_score=
     # Store reference
     figure_canvas_agg_dict[key] = figure_canvas_agg
 
-# Helper function to draw a matplotlib figure on a PySimpleGUI Canvas element
-def draw_figure_on_sg_canvas(canvas_elem, figure):
-    # This is a generic function to draw a figure on any PySimpleGUI Canvas
-    # It ensures the canvas is cleared before drawing a new figure
-    for child in canvas_elem.TKCanvas.winfo_children():
-        child.destroy()
-    figure_canvas_agg = FigureCanvasTkAgg(figure, master=canvas_elem.TKCanvas)
-    figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-    return figure_canvas_agg
-
-
 # Create the pie chart figure
 def create_pie_chart(score_data, figsize=(1.75, 1.75)):
     if (figsize == (3, 3)): # Used for the main score
         scores = [int(x) for x in score_data]
         value = round(sum(scores) / 10)
         fontsize_category = 12
-        fontsize_score = 40
+        fontsize_score = 32
     else: # Used for individual scores and the score info window
         value = int(score_data)
         fontsize_category = 8
@@ -97,8 +85,6 @@ def create_pie_chart(score_data, figsize=(1.75, 1.75)):
             category = "No Data Available"
             color = "#DDDDDD"
 
-        
-
     sizes = [value, remainder]
     fig, ax = plt.subplots(figsize=figsize, facecolor='none')
     ax.pie(sizes,
@@ -116,25 +102,32 @@ def create_pie_chart(score_data, figsize=(1.75, 1.75)):
     return fig
 
 def risk_assessment_window(window, data, row=0):
-    score_data = data[row]
+    if row < len(data):
+        score_data = data[row] if data[row] else data[-1]
+    else:
+        score_data = data[-1]
+    pie_charts = []  # Prepare list to hold all charts to update in batch
 
+    #iterate through the score data to create pie charts
     for i in range(11):
         canvas_key = f'-SCORE{i}-' if i > 0 else '-MAINSCORE-'
 
         if canvas_key == '-MAINSCORE-':
-            chart_data = score_data[13:23] # This is the data used for the main score
+            chart_data = score_data[13:23]  # Main score uses 10 values
             fig = create_pie_chart(chart_data, figsize=(3, 3))
             is_main_score_flag = True
         else:
-            chart_data = score_data[13 + (i - 1)] # Data for individual score
+            chart_data = score_data[13 + (i - 1)]  # Individual scores
             fig = create_pie_chart(chart_data)
             is_main_score_flag = False
+        # Store the figure, canvas key, chart data, and is_main_score flag
+        pie_charts.append((canvas_key, fig, chart_data, is_main_score_flag))
 
+    # Second pass: draw all figures (separated from creation)
+    for canvas_key, fig, chart_data, is_main_score_flag in pie_charts:
         if canvas_key in window.AllKeysDict:
             canvas_elem = window[canvas_key]
-
-            draw_figure(canvas_elem, fig, canvas_key, chart_data, window, is_main_score_flag) # Pass data and flag
-
+            draw_figure(canvas_elem, fig, canvas_key, chart_data, window, is_main_score_flag)
 
 def update_risk_window(main_window, selected_row):
     main_window['-LOGO-'].update(data=img.get_image(selected_row[7]), size=(100, 100))
