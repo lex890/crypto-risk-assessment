@@ -178,7 +178,7 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
 
         elif mw_event in (sg.WIN_CLOSED, 'Exit'):
             print('closing now')
-            os.close(filepath)
+            os.remove(filepath)
             main_window.close()
             return True
 
