@@ -1,5 +1,6 @@
 import csv
 import os
+from forex_python.converter import CurrencyRates
 
 def read_csv(filepath):
     # reinitialize (headings, data) if update happens in the csv
@@ -67,3 +68,9 @@ def convert_to_dict(data, currency_choice):
     })
     print(result)
     return result
+
+
+def currency_conversion(current_csv, currency_choice, new_currency_choice):
+    #TODO
+    c = CurrencyRates()
+    converted = c.convert(current_csv, currency_choice, 100)

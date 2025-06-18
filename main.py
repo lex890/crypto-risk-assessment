@@ -98,6 +98,19 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 app.update_risk_window(main_window, selected_row)
                 app.risk_assessment_window(main_window, data, current_row)
 
+        elif mw_event == '-CURRENCY-':
+            new_currency_choice = mw_values[mw_event]
+            current_csv = filepath
+            global currency_choice
+            app.currency_conversion(current_csv, currency_choice, new_currency_choice)
+            currency_choice = new_currency_choice
+            
+            headers, data = app.read_csv(filepath)
+            main_window['-TABLE-'].update(
+                values=app.get_page_data(data, current_page, rows_per_page),
+                headings=headers[:7])
+            main_window['-PAGENO-'].update('1')            
+
         elif mw_event == '-NEXT-':
             max_pages = (len(data) - 1) // rows_per_page + 1
 
@@ -132,7 +145,6 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 current_page -= 1
                 main_window['-TABLE-'].update(values=app.get_page_data(data, current_page, rows_per_page))
                 main_window['-PAGENO-'].update(str(current_page))
-                
         elif mw_event == '-NUMBER-':
             data.sort(key=lambda x: int(x[0]), reverse=reverse_flag)
             reverse_flag = not reverse_flag
