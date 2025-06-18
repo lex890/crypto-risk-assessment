@@ -26,11 +26,11 @@ score_header = [
 ethereum_ratio_cache = None
 # Load API keys
 COINGECKO_DEMO_API_KEY = keystore.load_api_key('CoinGecko', 'CGKEY')
+print('this is demo api: ', COINGECKO_DEMO_API_KEY)
 if not COINGECKO_DEMO_API_KEY:
     raise ValueError("COINGECKO_DEMO_API_KEY is required in settings.cfg")
 
 GITHUB_TOKEN = keystore.load_api_key('GitHub', 'GITHUB_TOKEN')
-BITQUERY_API_KEY = keystore.load_api_key('BitQuery', 'BITQUERY_API_KEY')
 
 # Cache for symbol to coin ID mapping
 symbol_to_coin_id_cache = {}

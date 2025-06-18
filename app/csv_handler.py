@@ -13,7 +13,7 @@ def read_csv(filepath):
     data = data[1:]
     return headings, data
 
-def export_to_csv(list_of_dict, filepath='./data/temp.csv'):
+def export_to_csv(list_of_dict, filepath='app/assets/data/temp.csv'):
     if not list_of_dict:
         print("No data to export.")
         return filepath
@@ -39,7 +39,7 @@ def append_csv(filepath, new_data):
         writer = csv.writer(file)
         for row in new_data:
             writer.writerow(row)
-    os.remove('./data/temp.csv') 
+    os.remove('app/assets/data/temp.csv') 
     print(f"✅ New data appended to {filepath}")
 
 def convert_to_dict(data, currency_choice):

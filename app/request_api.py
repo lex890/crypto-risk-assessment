@@ -105,7 +105,7 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None):
     
     parameters = {
         'start': '1',
-        'limit': '14',
+        'limit': '1',
         'convert': currency_choice
     }
     headers = {
@@ -193,7 +193,7 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None):
             progress_callback(90, "Saving data to file...")
             
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        filepath = f'./data/CMC_crypto_extended_{timestamp}.csv'
+        filepath = f'app/assets/data/CMC_crypto_extended_{timestamp}.csv'
 
         tbl.export_to_csv(output_with_scores, filepath)
         headings, data = tbl.read_csv(filepath)
@@ -315,7 +315,7 @@ def api_request_cg(api_key, currency_choice, progress_callback=None):
             progress_callback(90, "Saving data to file...")
             
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        filepath = f'./data/CG_crypto_extended_{timestamp}.csv'
+        filepath = f'app/assets/data/CG_crypto_extended_{timestamp}.csv'
 
         tbl.export_to_csv(output_with_scores, filepath)
         headings, data = tbl.read_csv(filepath)
@@ -361,11 +361,11 @@ def cg_get_historical_price(coin_id, date_str, currency):
         return 'N/A'
 
 def get_api_choice(imagepath):
-    api_choice = 'CoinMarketCap' if imagepath == './images/resizedCMC.png' else 'CoinGecko'
+    api_choice = 'CoinMarketCap' if imagepath == 'app/assets/images/CMC.png' else 'CoinGecko'
     return api_choice
 
 def get_cfg_key(imagepath):
-    cfg_key = 'CMCKEY' if imagepath == './images/resizedCMC.png' else 'CGKEY'
+    cfg_key = 'CMCKEY' if imagepath == 'app/assets/images/CMC.png' else 'CGKEY'
     return cfg_key
 
 def fetch_next_cryptocurrencies(offset, api_key, api_choice, currency_choice, progress_callback=None):
@@ -386,7 +386,7 @@ def fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_c
     currency = currency_choice
     parameters = {
         'start': str(offset + 1),
-        'limit': '14',
+        'limit': '1',
         'convert': currency
     }
     headers = {

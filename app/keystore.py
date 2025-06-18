@@ -1,7 +1,7 @@
 import configparser
 import os
 
-cfg_path='./keys/settings.cfg'
+cfg_path='app/assets/keys/settings.cfg'
 
 # Your functions here...
 def save_api_key(identifier, api_key, key_name, cfg_path=cfg_path):
@@ -35,7 +35,7 @@ def load_api_key(identifier, key_name, cfg_path=cfg_path):
         return None
 
     config.read(cfg_path)
-
+    print('config file found')
     # Use the identifier passed in directly, do NOT override it
     if config.has_section(identifier) and config.has_option(identifier, key_name):
         return config.get(identifier, key_name)

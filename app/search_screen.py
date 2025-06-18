@@ -98,7 +98,7 @@ def search_crypto(main_window, data, current_page, rows_per_page, user_search, c
             result_list_dict = han.convert_to_dict(result_list, currency_choice)
             result_list_scores = shr.evaluate_cryptos(result_list_dict, currency_choice)
             han.export_to_csv(result_list_scores)
-            _, new_data_list = han.read_csv('./data/temp.csv')
+            _, new_data_list = han.read_csv('app/assets/data/temp.csv')
             han.append_csv(filepath, new_data_list)
             
             _, data = han.read_csv(filepath)
@@ -183,7 +183,7 @@ def generate_results(result, user_search):
             [
                 sg.Button(
                     '',
-                    image_filename='./images/searchSZ.png',
+                    image_filename='app/assets/images/searchSZ.png',
                     image_size=(35, 35),
                     button_color=(sg.theme_background_color(), sg.theme_background_color()),
                     border_width=0,
@@ -197,7 +197,7 @@ def generate_results(result, user_search):
                 )
             ]
         ]
-        image_elem = sg.Image(filename='./images/no_result_found.png', key='-NORESULTIMG-', background_color="#dadada")
+        image_elem = sg.Image(filename='app/assets/images/no_result_found.png', key='-NORESULTIMG-', background_color="#dadada")
         canvas_frame = sg.Column([[image_elem]], background_color="#dadada", pad=((185, 0), (125, 0)),)
         canvas_message = sg.Text("It's Not Here...", font=('印品鸿蒙体', 20), background_color="#dadada", pad=((215, 0), (0, 0)), text_color="#838383")
         search_window = [[canvas_frame], [canvas_message]]
@@ -207,7 +207,7 @@ def generate_results(result, user_search):
             [
                 sg.Button(
                     '',
-                    image_filename='./images/searchSZ.png',
+                    image_filename='app/assets/images/searchSZ.png',
                     image_size=(35, 35),
                     button_color=(sg.theme_background_color(), sg.theme_background_color()),
                     border_width=0,
@@ -221,7 +221,7 @@ def generate_results(result, user_search):
                 ),
                 sg.Button(
                     '',
-                    image_filename='./images/closeNR.png',
+                    image_filename='app/assets/images/closeNR.png',
                     image_size=(35, 35),
                     button_color=(sg.theme_background_color(), sg.theme_background_color()),
                     border_width=0,

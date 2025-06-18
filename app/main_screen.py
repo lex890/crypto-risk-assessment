@@ -15,7 +15,7 @@ def main_screen(headings, data, current_page, rows_per_page):
         [
             
             sg.Button(
-                image_filename='./images/arrow-left-icon.png',
+                image_filename='app/assets/images/arrow-left-icon.png',
                 size=(50, 50),
                 key='-PREV-',
                 button_color=("#F0F0F0", sg.theme_background_color()),
@@ -30,7 +30,7 @@ def main_screen(headings, data, current_page, rows_per_page):
                 key='-PAGENO-'
             ),
             sg.Button(
-                image_filename='./images/arrow-right-icon.png',
+                image_filename='app/assets/images/arrow-right-icon.png',
                 size=(50, 50),
                 key='-NEXT-',
                 button_color=("#F0F0F0", sg.theme_background_color()),
@@ -55,7 +55,8 @@ def main_screen(headings, data, current_page, rows_per_page):
                 row_height=51,
                 font=('Helvetica', 12, 'bold'),
                 hide_vertical_scroll=True,
-                enable_events=True
+                enable_events=True,
+                alternating_row_color='#f0f0f0'
             )
         ],
         [         
@@ -66,43 +67,63 @@ def main_screen(headings, data, current_page, rows_per_page):
     layout = [
         #header and icon
         [
-            sg.Image(filename='./images/main.png', size=(17, 15), pad=((25, 0), (25, 0)), enable_events=True, key='-HEADERICON-'), 
-            sg.Text('Crypto Fraud Detection Tool', font=('Helvetica', 16), pad=((15, 0), (25, 0)), enable_events=True, key='-HEADER-'),
+            sg.Image(filename='app/assets/images/resizedLogo.png', size=(50, 50), pad=((25, 0), (25, 0)), enable_events=True, key='-HEADERICON-'), 
+            sg.Text('Cryptocurrency Investment Risk Assessment Tool', font=('Helvetica', 16), pad=((15, 0), (25, 0)), enable_events=True, key='-HEADER-'),
             sg.Push(),
             
         ],
         #search bar and bunch of buttons
         [
             [   
-                sg.Button('', image_filename='./images/byalphaR.png',image_size=(50, 50), button_color=("#F0F0F0", sg.theme_background_color()), border_width=1, pad=((50, 0), (75, 0)), key=('-ALPHA-'), tooltip='Sort by Alpha'),
-                sg.Button('', image_filename='./images/bynumberR.png',image_size=(50, 50), button_color=("#F0F0F0", sg.theme_background_color()), border_width=1, pad=((10, 0), (75, 0)), key=('-NUMBER-'), tooltip='Sort by Ranking(#)'),
                 sg.Button(
                     '', 
-                    image_filename='./images/bypriceR.png',
+                    image_filename='app/assets/images/byalpha.png', 
+                    image_size=(50, 50), button_color=("#F0F0F0", 
+                    sg.theme_background_color()), border_width=1, 
+                    pad=((35, 0), (35, 0)), key=('-ALPHA-'), 
+                    tooltip='Sort by Alpha'
+                ),
+                sg.Button(
+                    '', 
+                    image_filename='app/assets/images/bynumber.png',
+                    image_size=(50, 50), button_color=("#F0F0F0", 
+                    sg.theme_background_color()), 
+                    border_width=1, 
+                    pad=((10, 0), (35, 0)), 
+                    key=('-NUMBER-'), 
+                    tooltip='Sort by Ranking(#)'
+                ),
+                sg.Button(
+                    '', 
+                    image_filename='app/assets/images/byprice.png',
                     image_size=(50, 50), 
-                    button_color=("#F0F0F0", sg.theme_background_color()), border_width=1, 
-                    pad=((10, 0), (75, 0)), 
+                    button_color=("#F0F0F0", sg.theme_background_color()), 
+                    border_width=1, 
+                    pad=((10, 0), (35, 0)), 
                     key=('-PRICE-'), 
                     tooltip='Sort by Price($)'
-                ),    
+                ),
+
+                sg.Text('Select Currency', font=('Helvetica', 12), pad=((50, 0), (35, 0))),
+                sg.Combo(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'PHP'], default_value='USD', font=('Helvetica', 14), key='-CURRENCY-', pad=((5, 0), (35, 0)), tooltip='Select Currency'),   
 
                 sg.InputText(
                     default_text='',
-                    size=(25, 1),
+                    size=(17, 1),
                     font=('Helvetica', 18),
-                    pad=((200, 10), (75, 0)),
+                    pad=((50, 10), (35, 0)),
                     key='-SEARCHBAR-',
                     tooltip='Search Cryptocurrency',
                     text_color='gray'
                 ),
                 sg.Button(
                     '',
-                    image_filename='./images/searchR.png',
+                    image_filename='app/assets/images/search.png',
                     image_size=(50, 50),
                     button_color=(sg.theme_background_color(), sg.theme_background_color()),
                     border_width=0,
                     key='-SBUTTON-',
-                    pad=((0, 25), (75, 0))
+                    pad=((0, 25), (35, 0))
                 )
                 
             ],

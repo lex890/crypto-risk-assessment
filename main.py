@@ -1,21 +1,23 @@
 import re
 import app
 import os
+import sys
 import FreeSimpleGUI as sg
 
 sg.theme('LightGrey1')
 sg.theme_button_color(('black', 'gainsboro'))
+
 pattern = re.compile(r'^-(ICON|NAME)(\d+)-$')
-cmc_img = './images/resizedCMC.png'
-cg_img = './images/resizedCG.png'
+cmc_img = 'app/assets/images/CMC.png'
+cg_img = 'app/assets/images/CG.png'
 
 current_image = {
-    '-IMAGE-': './images/resizedCMC.png',
+    '-IMAGE-': cmc_img
 }
 currency_choice = 'USD'
 
 def handle_crypto_toggle(login_window):
-    if current_image['-IMAGE-'] == './images/resizedCG.png':
+    if current_image['-IMAGE-'] == cg_img:
         new_image = cmc_img
     else:
         new_image = cg_img
@@ -27,9 +29,8 @@ def handle_keystore(login_window):
     api_choice = app.get_api_choice(imagepath)
     cfg_key = app.get_cfg_key(imagepath)
     new_api_key = app.load_api_key(api_choice, cfg_key)
-    print(new_api_key)
     login_window['-API-'].update(value=new_api_key)
-    sg.popup_auto_close(f'Pasted the API Key for {'CoinMarketCap' if api_choice == 1 else 'CoinGecko'}', auto_close_duration=2)
+    sg.popup_auto_close(f'Pasted the API Key for {api_choice}', auto_close_duration=2)
 
 def handle_save_key(lw_values):
     api_key = lw_values.get('-API-', '').strip()
@@ -41,10 +42,8 @@ def handle_save_key(lw_values):
 
 def handle_confirm(login_window, lw_values):
     api_key = lw_values.get('-API-', '').strip()
-    currency_choice = lw_values.get('-CURRENCY-')
     print(f"API Key Entered: '{api_key}'")
-    print(f"Currency Choice: '{currency_choice}'")
-    api_choice = '1' if current_image['-IMAGE-'] == './images/resizedCMC.png' else '2'
+    api_choice = '1' if current_image['-IMAGE-'] == cmc_img else '2'
     
     if (api_choice == '1'):
         validity = app.is_valid_cmc_api_key(api_key)
@@ -57,9 +56,9 @@ def handle_confirm(login_window, lw_values):
 
     print(validity, api_choice, api_key)
     login_window.hide()
-    return True, api_key, api_choice, currency_choice
+    return True, api_key, api_choice
 
-def handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice, currency_choice):
+def handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice):
     reverse_flag = True
     while True:
         mw_event, mw_values = main_window.read()
@@ -116,7 +115,7 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                         # creates new csv file with new data
                         app.export_to_csv(new_data)
                         #appends new data to main csv then deletes the created csv file
-                        _, new_data_list = app.read_csv('./data/temp.csv')
+                        _, new_data_list = app.read_csv('app/assets/data/temp.csv')
                         app.append_csv(filepath, new_data_list)
                         print('this is the current data: ', data)
 
@@ -186,8 +185,9 @@ def main():
     data = []
     current_page = 1
     rows_per_page = 14
-    login_window = app.login_screen()
-    
+    api_choice = 'CoinMarketCap' if current_image == cmc_img else 'CoinGecko'
+    login_window = app.login_screen(api_choice)
+
     while True:
         lw_event, lw_values = login_window.read()
         print(lw_event, lw_values)
@@ -203,7 +203,7 @@ def main():
         elif lw_event == 'Clear':
             login_window['-API-'].update('')
         elif lw_event == 'Confirm':
-            success, api_key, api_choice, currency_choice = handle_confirm(login_window, lw_values)
+            success, api_key, api_choice = handle_confirm(login_window, lw_values)
             if success:
                 result = app.login_loading(api_key, api_choice, currency_choice)    
 
@@ -215,7 +215,7 @@ def main():
                 
                 main_window = app.main_screen(headings, data, current_page, rows_per_page)
                 print('Data fetched successfully')
-                if handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice, currency_choice):
+                if handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice):
                     login_window.un_hide()
         elif lw_event == '-HELP-':
             sg.popup('Your API Key allows the app to access data from providers like CoinGecko or CoinMarketCap. Keep it private.')
