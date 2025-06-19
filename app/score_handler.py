@@ -420,11 +420,11 @@ def evaluate_cryptos(cryptos, currency_choice):
         rank_number = coin.get('#')
         crypto_name = coin.get('Name')
         logger.info(f'Retrieved: {crypto_name}')
-        current_price = coin.get(f'Current Price ({currency_choice})')
+        current_price = coin.get('Current Price')
         volume_1h = coin.get('1h%')
         volume_24h = coin.get('24h%')
         volume_7d = coin.get('7d%')
-        market_cap = coin.get(f'Market Cap ({currency_choice})')
+        market_cap = coin.get('Market Cap')
         logo_link = coin.get('Logo')
         symbol = coin.get('Symbol')
         description = coin.get('Description')
@@ -458,11 +458,11 @@ def evaluate_cryptos(cryptos, currency_choice):
         scores = {
             '#': rank_number,
             'Name': crypto_name,
-            f'Current Price ({currency_choice})': current_price,
+            'Current Price': current_price,
             '1h%': volume_1h,
             '24h%': volume_24h,
             '7d%': volume_7d,
-            f'Market Cap ({currency_choice})': market_cap,
+            'Market Cap': market_cap,
             'Logo': logo_link,
             'Symbol': symbol,
             'Description': description,

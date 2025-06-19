@@ -105,7 +105,7 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None):
     
     parameters = {
         'start': '1',
-        'limit': '1',
+        'limit': '14',
         'convert': currency_choice
     }
     headers = {
@@ -170,11 +170,11 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None):
             output.append({
                 '#': ranking,
                 'Name': name,
-                'Current Price ('+currency_choice+')': f"{price:,.2f}",
+                'Current Price': f"{price:,.2f}",
                 '1h%': f"{volume_1h:,.2f}",
                 '24h%': f"{volume_24h:,.2f}",
                 '7d%': f"{volume_7d:,.2f}",
-                'Market Cap ('+currency_choice+')': f"{float(market_cap):,.2f}",
+                'Market Cap': f"{float(market_cap):,.2f}",
                 'Logo': logo,
                 'Symbol': symbol,
                 'Description': description,
@@ -290,11 +290,11 @@ def api_request_cg(api_key, currency_choice, progress_callback=None):
             output.append({
                 '#': idx,
                 'Name': name,
-                f'Current Price ({currency_choice})': f"{price:,.2f}",
+                'Current Price': f"{price:,.2f}",
                 '1h%': f"{volume_1h:,.2f}" if isinstance(volume_1h, (float, int)) else 'N/A',
                 '24h%': f"{volume_24h:,.2f}" if isinstance(volume_24h, (float, int)) else 'N/A',
                 '7d%': f"{volume_7d:,.2f}" if isinstance(volume_7d, (float, int)) else 'N/A',
-                f'Market Cap ({currency_choice})': f"{float(market_cap):,.2f}" if isinstance(market_cap, (float, int)) else 'N/A',
+                f'Market Cap': f"{float(market_cap):,.2f}" if isinstance(market_cap, (float, int)) else 'N/A',
                 'Logo': logo,
                 'Symbol': symbol.upper(),
                 'Description': description,
@@ -386,7 +386,7 @@ def fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_c
     currency = currency_choice
     parameters = {
         'start': str(offset + 1),
-        'limit': '1',
+        'limit': '14',
         'convert': currency
     }
     headers = {
@@ -450,11 +450,11 @@ def fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_c
             output.append({
                 '#': ranking,
                 'Name': name,
-                f'Current Price ({currency})': f"{price:,.2f}",
+                'Current Price': f"{price:,.2f}",
                 '1h%': f"{volume_1h:,.2f}",
                 '24h%': f"{volume_24h:,.2f}",
                 '7d%': f"{volume_7d:,.2f}",
-                f'Market Cap ({currency})': f"{float(market_cap):,.2f}",
+                f'Market Cap': f"{float(market_cap):,.2f}",
                 'Logo': logo,
                 'Symbol': symbol,
                 'Description': description,
@@ -537,11 +537,11 @@ def fetch_cg_next_cryptocurrencies(offset, currency_choice, progress_callback=No
             output.append({
                 '#': idx,
                 'Name': name,
-                f'Current Price ({currency_choice})': f"{price:,.2f}",
+                'Current Price': f"{price:,.2f}",
                 '1h%': f"{volume_1h:,.2f}" if isinstance(volume_1h, (float, int)) else 'N/A',
                 '24h%': f"{volume_24h:,.2f}" if isinstance(volume_24h, (float, int)) else 'N/A',
                 '7d%': f"{volume_7d:,.2f}" if isinstance(volume_7d, (float, int)) else 'N/A',
-                f'Market Cap ({currency_choice})': f"{float(market_cap):,.2f}" if isinstance(market_cap, (float, int)) else 'N/A',
+                f'Market Cap': f"{float(market_cap):,.2f}" if isinstance(market_cap, (float, int)) else 'N/A',
                 'Logo': logo,
                 'Symbol': symbol.upper(),
                 'Description': description,

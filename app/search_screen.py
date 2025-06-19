@@ -76,11 +76,11 @@ def search_crypto(main_window, data, current_page, rows_per_page, user_search, c
                     result_list.append((
                         row['#'],
                         row['Name'],
-                        row[f'Current Price ({currency_choice})'],
+                        row['Current Price'],
                         row['1h%'],
                         row['24h%'],
                         row['7d%'],
-                        row[f'Market Cap ({currency_choice})'],
+                        row['Market Cap'],
                         row['Logo'],
                         row['Symbol'],
                         row['Description'],

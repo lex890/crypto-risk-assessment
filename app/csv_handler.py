@@ -1,6 +1,9 @@
-import csv
 import os
+import csv
+import pandas as pd
+from decimal import Decimal
 from forex_python.converter import CurrencyRates
+
 
 def read_csv(filepath):
     # reinitialize (headings, data) if update happens in the csv
@@ -54,11 +57,11 @@ def convert_to_dict(data, currency_choice):
     result.append({
         '#': ranking,
         'Name': name,
-        f'Current Price ({currency_choice})': price,
+        f'Current Price': price,
         '1h%': volume_1h,
         '24h%': volume_24h,
         '7d%': volume_7d,
-        f'Market Cap ({currency_choice})': market_cap,
+        'Market Cap': market_cap,
         'Logo': logo,
         'Symbol': symbol,
         'Description': description,
@@ -71,6 +74,49 @@ def convert_to_dict(data, currency_choice):
 
 
 def currency_conversion(current_csv, currency_choice, new_currency_choice):
-    #TODO
+    if currency_choice == new_currency_choice:
+      return currency_choice
+    df = pd.read_csv(current_csv)
+    
+    # Read the original column
+    column_name_price = "Current Price"
+    column_name_mcap = "Market Cap"
+    if column_name_price not in df.columns:
+        raise ValueError(f"Column '{column_name_price}' not found in CSV.")
+
+    column_values_price = df[column_name_price].tolist()
+    column_values_mcap = df[column_name_mcap].tolist()
+    # Convert each value and collect results
     c = CurrencyRates()
-    converted = c.convert(current_csv, currency_choice, 100)
+    new_currency_result_price = []
+    new_currency_result_mcap = []
+    for value in column_values_price:
+        try:
+            numeric_value = Decimal(str(value).replace(",", "").strip())
+            converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+            formatted_value = f"{converted_value:,.2f}"  # Add commas and fix to 2 decimal places
+            new_currency_result_price.append(formatted_value)
+            print(f'new value {formatted_value}')
+        except Exception as e:
+            print(f"Error converting {value}: {e}")
+            new_currency_result_price.append(None)  # Or handle however you want
+    
+    for value in column_values_mcap:
+        try:
+            numeric_value = Decimal(str(value).replace(",", "").strip())
+            converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+            formatted_value = f"{converted_value:,.2f}"  # Add commas and fix to 2 decimal places
+            new_currency_result_mcap.append(formatted_value)
+            print(f'new value {formatted_value}')
+        except:
+            print(f"Error converting {value}: {e}")
+            new_currency_result_mcap.append(None)  # Or handle however you want
+    # Replace old column with new values
+    df[column_name_price] = new_currency_result_price
+    df[column_name_mcap] = new_currency_result_mcap
+    # Save the updated DataFrame
+    df.to_csv(current_csv, index=False)
+
+    print(f"✅ Conversion complete. Saved to: {current_csv}")
+    return new_currency_choice
+

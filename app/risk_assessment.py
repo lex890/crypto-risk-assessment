@@ -43,21 +43,22 @@ def update_risk_window(main_window, selected_row):
 
 def get_warning_image(total_score):
     total_score = int(total_score)
-    if total_score >= 7:
+    print('this is total score: ',total_score)
+    if total_score >= 70:
         warning_image = 'app/assets/images/good.png'
-    elif total_score >= 4:
+    elif total_score >= 40:
         warning_image = 'app/assets/images/warning.png'
-    else:
+    elif total_score >= 0:
         warning_image = 'app/assets/images/danger.png'
     return warning_image
 
 def get_warning_msg(total_score):
     total_score = int(total_score)
-    if total_score >= 7:
+    if total_score >= 75:
         warning_msg = 'Good'
-    elif total_score >= 4:
+    elif total_score >= 40:
         warning_msg = 'Caution'
-    else:
+    elif total_score >= 0:
         warning_msg = 'Warning'
     return warning_msg
 
@@ -118,7 +119,7 @@ def score_window(data, headings):
     ]
     hyperlink = [
         [
-            sg.Image(filename = 'app/assets/images/hyperlink.png', size=(30, 30), pad=((0, 0),(0, 0)))
+            sg.Image(filename= 'app/assets/images/hyperlink.png', size=(30, 30), pad=((0, 0),(0, 0)), enable_events=True, key='-HYPERLINK-')
         ]
     ]
 
@@ -150,10 +151,10 @@ def score_window(data, headings):
 
     warning_image_box = [
         [
-            sg.Image(get_warning_image(data[0][23]), size=(50, 50), key='-LOGO-', pad=((0, 0), (0, 0))),   
+            sg.Image(get_warning_image(data[0][23]), size=(50, 50), key='-WARNING-IMG-', pad=((0, 0), (0, 0))),   
         ],
         [
-            sg.Text(get_warning_msg(data[0][23]))
+            sg.Text(get_warning_msg(data[0][23]), key='-WARNING-TEXT-', pad=((0, 0), (0, 0))), 
         ]
     ]
     #crypto info name/symbol/rank/desc

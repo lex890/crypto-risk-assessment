@@ -2,6 +2,7 @@ import re
 import app
 import os
 import sys
+import webbrowser
 import FreeSimpleGUI as sg
 
 sg.theme('LightGrey1')
@@ -15,7 +16,7 @@ current_image = {
     '-IMAGE-': cmc_img
 }
 currency_choice = 'USD'
-
+select_entry = '1'
 def handle_crypto_toggle(login_window):
     if current_image['-IMAGE-'] == cg_img:
         new_image = cmc_img
@@ -59,11 +60,13 @@ def handle_confirm(login_window, lw_values):
     return True, api_key, api_choice
 
 def handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice):
+    global currency_choice
+    global select_entry
     reverse_flag = True
     while True:
         mw_event, mw_values = main_window.read()
-        print(mw_event)
-
+        
+        print('select_entry: ', select_entry)
         if mw_event == '-SCORE-CLICKED-':
             key = mw_values[mw_event]
             if key in app.descriptions:
@@ -97,20 +100,26 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 current_row = (current_page - 1) * rows_per_page + selected_index
                 app.update_risk_window(main_window, selected_row)
                 app.risk_assessment_window(main_window, data, current_row)
+                select_entry = selected_index
+                print('select_entry in table: ',select_entry, type(select_entry))
+                main_window['-WARNING-IMG-'].update(filename=app.get_warning_image(data[select_entry][23]))
+                main_window['-WARNING-TEXT-'].update(app.get_warning_msg(data[select_entry][23]))
+                
 
         elif mw_event == '-CURRENCY-':
             new_currency_choice = mw_values[mw_event]
             current_csv = filepath
-            global currency_choice
             app.currency_conversion(current_csv, currency_choice, new_currency_choice)
             currency_choice = new_currency_choice
-            
-            headers, data = app.read_csv(filepath)
+            print('this is new:', currency_choice)
+            _, data = app.read_csv(filepath)
             main_window['-TABLE-'].update(
-                values=app.get_page_data(data, current_page, rows_per_page),
-                headings=headers[:7])
-            main_window['-PAGENO-'].update('1')            
+                values=app.get_page_data(data, current_page, rows_per_page))
+            main_window['-PAGENO-'].update('1')  
 
+        elif mw_event == '-HYPERLINK-':
+            webbrowser.open(data[select_entry][11])  # Replace with your URL
+    
         elif mw_event == '-NEXT-':
             max_pages = (len(data) - 1) // rows_per_page + 1
 
