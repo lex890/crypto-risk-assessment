@@ -233,6 +233,15 @@ def main():
                 print('Data fetched successfully')
                 if handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice):
                     login_window.un_hide()
+        elif lw_event == '-DEMOMODE-':
+            filepath = 'app/assets/data/data.csv'
+            api_key = ''
+            api_choice = ''
+            headings, data = app.read_csv(filepath)
+            main_window = app.main_screen(headings, data, current_page, rows_per_page)
+            
+            if handle_main_window_events(main_window, data, current_page, rows_per_page, filepath, api_key, api_choice):
+                login_window.un_hide()
         elif lw_event == '-HELP-':
             sg.popup('Your API Key allows the app to access data from providers like CoinGecko or CoinMarketCap. Keep it private.')
 
