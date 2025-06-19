@@ -32,19 +32,22 @@ def risk_assessment_window(window, data, row=0):
             canvas_elem = window[canvas_key]
             plg.draw_figure(canvas_elem, fig, canvas_key, chart_data, window, is_main_score_flag)
 
-def update_risk_window(main_window, selected_row):
+def update_risk_window(main_window, selected_row, currency_choice):
     main_window['-LOGO-'].update(data=img.get_image(selected_row[7]), size=(100, 100))
     main_window['-RANK-'].update(value=f'#{selected_row[0]}')
     main_window['-NAME-'].update(value=selected_row[1])
     main_window['-SYMB-'].update(value=selected_row[8])
-    main_window['-DATE-'].update(value=f'{selected_row[10]}')
+    main_window['-DATE-'].update(value=f'Date: {selected_row[10]}')
     main_window['-DESC-'].update(value=f'{selected_row[9]}')
-
+    main_window['-WARNING-IMG-'].update(filename=get_warning_image(selected_row[23]))
+    main_window['-WARNING-TEXT-'].update(get_warning_msg(selected_row[23]))
+    main_window['-PRICE-LABEL-'].update(f'Price ({currency_choice}): {selected_row[2]}')
+    main_window['-MCAP-LABEL-'].update(f'Market Cap ({currency_choice}): {selected_row[6]}') 
 
 def get_warning_image(total_score):
     total_score = int(total_score)
     print('this is total score: ',total_score)
-    if total_score >= 70:
+    if total_score >= 75:
         warning_image = 'app/assets/images/good.png'
     elif total_score >= 40:
         warning_image = 'app/assets/images/warning.png'
@@ -70,15 +73,30 @@ def score_window(data, headings):
                      background_color='#F0F0F0')
         ]
     ]
-
-    ranking = [
+    image_box = [
         [
+            sg.Column(logo, pad=((0, 0),(0, 0)))
+        ]
+    ]
+    ranking_text = [
+        [ 
             sg.Text(f"#{data[0][0]}",           # crypto ranking
-            font='Any 16 bold',
-            pad=((10, 0), (0, 40)),
+            font='Any 12 bold',
+            pad=((0, 0), (0, 0)),
             text_color="#686868",
             key='-RANK-',
             background_color='#F0F0F0')
+        ]
+    ]
+    ranking_container = [
+        [
+            sg.Column(ranking_text, pad=((0, 0), (0, 0)))
+        ]
+    ]
+
+    ranking_box = [
+        [
+            sg.Column(ranking_container, pad=((18, 0), (9, 0)))
         ]
     ]
 
@@ -87,59 +105,98 @@ def score_window(data, headings):
             sg.Text(data[0][1],                   # crypto name
             font='Any 24 bold',
             key='-NAME-',
-            pad=((5, 0), (0, 40))),
+            pad=((0, 0), (0, 55))),
 
             sg.Text(data[0][8],                   # crypto symbol
             font='Any 12 bold',
             text_color='#a1a3a6',
-            pad=((3, 0), (0, 55)),
+            pad=((3, 0), (0, 70)),
             key='-SYMB-')
         ]
     ]
-    date_box = [
+    date_text = [
         [
             sg.Text(f'Date: {data[0][10]}',   # date added
             font='Any 12 bold',
             text_color='#a1a3a6',
-            pad=((5, 0), (0, 40)),
+            pad=((0, 0), (0, 0)),
             key='-DATE-',
             background_color='#F0F0F0')  
+        ]
+    ]
+    date_box = [
+        [
+            sg.Column(date_text, pad=((0, 0),(0, 0)))
+        ]
+    ]
+
+    price_text = [
+        [
+            sg.Text(f'Price (USD): {data[0][2]}',   # date added
+                font='Any 12 bold',
+                text_color='#a1a3a6',
+                pad=((0, 0), (0, 0)),
+                key='-PRICE-LABEL-',
+                background_color='#F0F0F0') 
         ]
     ]
 
     price_box = [
         [
-            sg.Text(f'Price: {data[0][2]}',   # date added
-            font='Any 12 bold',
-            text_color='#a1a3a6',
-            pad=((5, 0), (0, 40)),
-            key='-DATE-',
-            background_color='#F0F0F0')             
+           sg.Column(price_text, pad=((0, 0),(0, 0))) 
         ]   
     ]
-    hyperlink = [
+
+    mcap_text = [
         [
-            sg.Image(filename= 'app/assets/images/hyperlink.png', size=(30, 30), pad=((0, 0),(0, 0)), enable_events=True, key='-HYPERLINK-')
+            sg.Text(f'Market Cap (USD): {data[0][6]}',   # date added
+                font='Any 12 bold',
+                text_color='#a1a3a6',
+                pad=((0, 0), (0, 0)),
+                key='-MCAP-LABEL-',
+                background_color='#F0F0F0')             
         ]
     ]
 
+    mcap_box = [
+        [
+            sg.Column(mcap_text, pad=((0, 0),(0, 0)))
+        ]
+    ]
+
+
     information_box = [
         [
-            sg.Column(ranking, size=(50, 50)),
-            sg.Column(name, size=(350, 50))
+            sg.Column(ranking_box, size=(50, 50), pad=((0, 0),(0, 0))),
+            sg.Column(name, size=(350, 50), pad=((0, 0),(0, 0)))
         ],
         [
-            sg.Column(date_box, element_justification='left', size=(150, 50)),
-            sg.Column(price_box, element_justification='left', size=(250, 50)),
+            sg.Column(date_box, size=(150, 28), pad=((18, 0),(0, 0))),
+            sg.Column(price_box, size=(250, 28), pad=((0, 0),(0, 0))),
+        ],
+        [
+            sg.Column(mcap_box, size=(400, 28), pad=((18, 0),(0, 0)))
+        ]
+
+    ]
+
+    hyperlink = [
+        [
+            sg.Image(filename='app/assets/images/hyperlink.png', 
+                    size=(30, 30), 
+                    pad=((25, 0),(0, 0)), 
+                    enable_events=True, 
+                    key='-HYPERLINK-',
+                    tooltip="Click to visit website")
         ]
     ]
 
     description_box = [
         [
             sg.Text(f'{data[0][9]}',   # crypto desc
-            background_color="#fefefe",
+            background_color='#F0F0F0',
             font=('Courier New', 12),
-            size=(51, 9),
+            size=(51, 10),
             auto_size_text=False,
             justification='left',
             pad=((0, 0), (0, 0)),
@@ -151,50 +208,60 @@ def score_window(data, headings):
 
     warning_image_box = [
         [
-            sg.Image(get_warning_image(data[0][23]), size=(50, 50), key='-WARNING-IMG-', pad=((0, 0), (0, 0))),   
+            sg.Image(get_warning_image(data[0][23]), size=(50, 50), key='-WARNING-IMG-', pad=((30, 0), (0, 0))),   
         ],
         [
-            sg.Text(get_warning_msg(data[0][23]), key='-WARNING-TEXT-', pad=((0, 0), (0, 0))), 
+            sg.Push(),
+            sg.Text(get_warning_msg(data[0][23]), key='-WARNING-TEXT-', pad=((0, 8), (5, 0))), 
         ]
     ]
     #crypto info name/symbol/rank/desc
 
     upper_info = [
         [
-            sg.Column(logo, size=(110, 110)),
-            sg.Column(information_box, size=(430, 110)),
-            sg.Column(warning_image_box, size=(65, 100))
+            sg.Column(image_box, size=(110, 110), pad=((0, 0), (0, 0))),
+            sg.Column(information_box, size=(410, 110), pad=((0, 0), (0, 0))),
+            sg.Column(warning_image_box, size=(85, 110), pad=((0, 0), (0, 0)))
         ]
     ]
 
     lower_info = [
         [
-            sg.Column(description_box, element_justification='left', size=(530, 290), background_color='#F0F0F0'),
-            sg.Column(hyperlink, size=(80, 280))
+            sg.Column(description_box, element_justification='left', size=(550, 290), pad=((0, 0), (0, 0))),
+            sg.Column(hyperlink, size=(80, 290), pad=((0, 0), (0, 0)))
         ]   
     ]
 
+    info_container = [
+        [sg.Column(upper_info, size=(620, 115))],   
+        [sg.Column(lower_info, size=(620, 190))]
+    ]
+
+
     info = [
-        [sg.Column(upper_info, size=(630, 115))],   
-        [sg.Column(lower_info, size=(630, 400))]
+        [
+            sg.Column(info_container,size=(615, 330), pad=((0, 0), (0, 0)))
+        ]
 
     ]
+
 
     assessment_criteria = headings[13:23]
     print(assessment_criteria)
     
     assessment_score = [
         # donut graphs scores
-        sg.Canvas(key=f"-SCORE{i+1}-", background_color=sg.theme_background_color(), size=(100, 100), expand_y=True, tooltip=assessment_criteria[i])
+        sg.Canvas(key=f"-SCORE{i+1}-", background_color=sg.theme_background_color(), size=(100, 100), tooltip=assessment_criteria[i])
         for i in range(10)
     ]
     criteria_text = [
-        sg.Text(
+        [
+            sg.Text(
                 assessment_criteria[i],
-                font='Any 8 bold',
-                size=(25, 1),
-                pad=((0, 10), (0, 0))
-        )
+                font='Any 9 bold',
+                size=(26, 1)
+            )
+        ]
         for i in range(10)
     ]
 
@@ -211,10 +278,93 @@ def score_window(data, headings):
                 ]
             ]  # fix canvas space
 
+    score_labels_width = 180
+    score_labels_height = 30
+    score_labels_upper = [
+        [
+            sg.Column(
+               [criteria_text[0]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((0, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[1]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((3, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[2]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((6, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[3]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((6, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[4]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((0, 0), (0, 0))
+            )
+        ]
+    ]
+
+    score_labels_lower = [
+        [
+            sg.Column(
+                [criteria_text[5]],
+                background_color='#F0F0F0',
+                size=(score_labels_width, score_labels_height), pad=((0, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[6]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((3, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[7]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((6, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[8]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((6, 0), (0, 0))
+            ),
+            sg.Column(
+               [criteria_text[9]],
+               background_color='#F0F0F0',
+               size=(score_labels_width, score_labels_height), pad=((0, 0), (0, 0))
+            )
+        ]
+    ]
+
     upper_content = [
         [
-            sg.Column(info, element_justification='left', size=(630, 305)),
+            sg.Column(info, size=(630, 325)),
             sg.Column(score, element_justification='center', vertical_alignment='top')
+        ]
+    ]
+
+
+    lower_content = [
+        [
+            sg.Column(score_labels_upper, pad=((0, 0), (0, 0)), background_color='#F0F0F0')
+        ],
+        [
+            sg.Column(
+            [assessment_score[:5]],
+            background_color='#f5f5f5', pad=((0, 0), (0, 0)))
+        ],
+        [
+            sg.Column(score_labels_lower, pad=((0, 0), (0, 0)),background_color='#F0F0F0')
+        ],
+        [
+            sg.Column(
+            [assessment_score[5:]],
+            background_color="#f5f5f5", pad=((0, 0), (0, 0))
+            )
         ]
     ]
 
@@ -222,30 +372,15 @@ def score_window(data, headings):
         [
             sg.Column(
             upper_content,
-            background_color="#f5f5f5")
+            background_color="#f5f5f5", pad=((0, 0), (0, 0)))
         ]
     ]
 
     lower_window = [
         [
             sg.Column(
-               [criteria_text[:5]]
-            )
-        ],
-        [
-             sg.Column(
-             [assessment_score[:5]],
-             background_color='#f5f5f5')
-        ],
-        [
-            sg.Column(
-               [criteria_text[5:]],
-            )
-        ],
-        [
-             sg.Column(
-             [assessment_score[5:]],
-             background_color="#f5f5f5")
+            lower_content,
+            background_color="#f5f5f5", pad=((0, 0), (15, 0)))
         ]
     ]
 

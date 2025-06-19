@@ -179,15 +179,15 @@ def main_screen(headings, data, current_page, rows_per_page):
     layout = [
         #header and icon
         [
-            sg.Column(first_layer, expand_x=True)
+            sg.Column(first_layer)
         ],
         
         [
-            sg.Column(second_layer, expand_x=True)   
+            sg.Column(second_layer)   
         ],
 
         [
-            sg.Column(third_layer, background_color='#F0F0F0', expand_y=True)
+            sg.Column(third_layer)
         ],
         [
             sg.Column(fourth_layer, background_color='#F0F0F0'), 

@@ -16,7 +16,7 @@ current_image = {
     '-IMAGE-': cmc_img
 }
 currency_choice = 'USD'
-select_entry = '1'
+select_entry = 0
 def handle_crypto_toggle(login_window):
     if current_image['-IMAGE-'] == cg_img:
         new_image = cmc_img
@@ -65,8 +65,6 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
     reverse_flag = True
     while True:
         mw_event, mw_values = main_window.read()
-        
-        print('select_entry: ', select_entry)
         if mw_event == '-SCORE-CLICKED-':
             key = mw_values[mw_event]
             if key in app.descriptions:
@@ -98,14 +96,9 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 page_data = app.get_page_data(data, current_page, rows_per_page)
                 selected_row = page_data[selected_index]
                 current_row = (current_page - 1) * rows_per_page + selected_index
-                app.update_risk_window(main_window, selected_row)
+                app.update_risk_window(main_window, selected_row, currency_choice)
                 app.risk_assessment_window(main_window, data, current_row)
-                select_entry = selected_index
-                print('select_entry in table: ',select_entry, type(select_entry))
-                main_window['-WARNING-IMG-'].update(filename=app.get_warning_image(data[select_entry][23]))
-                main_window['-WARNING-TEXT-'].update(app.get_warning_msg(data[select_entry][23]))
-                
-
+                select_entry = current_row
         elif mw_event == '-CURRENCY-':
             new_currency_choice = mw_values[mw_event]
             current_csv = filepath
@@ -115,8 +108,10 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
             _, data = app.read_csv(filepath)
             main_window['-TABLE-'].update(
                 values=app.get_page_data(data, current_page, rows_per_page))
-            main_window['-PAGENO-'].update('1')  
-
+            main_window['-PAGENO-'].update('1')
+            main_window['-PRICE-LABEL-'].update(f'Price ({currency_choice}): {data[select_entry][2]}')
+            main_window['-MCAP-LABEL-'].update(f'Market Cap ({currency_choice}): {data[select_entry][6]}')
+             
         elif mw_event == '-HYPERLINK-':
             webbrowser.open(data[select_entry][11])  # Replace with your URL
     
@@ -129,7 +124,7 @@ def handle_main_window_events(main_window, data, current_page, rows_per_page, fi
                 main_window['-PAGENO-'].update(str(current_page))
             else:
                 # Fetch next set of cryptocurrencies
-                try:
+                try:    
                     current_page += 1
                     new_data = app.next_screen_loading(data, api_key, api_choice, currency_choice)
                     print('new_data: ', new_data, type(new_data))
@@ -208,7 +203,7 @@ def main():
     rows_per_page = 14
     api_choice = 'CoinMarketCap' if current_image == cmc_img else 'CoinGecko'
     login_window = app.login_screen(api_choice)
-
+    
     while True:
         lw_event, lw_values = login_window.read()
         print(lw_event, lw_values)
