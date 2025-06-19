@@ -105,7 +105,7 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None):
     
     parameters = {
         'start': '1',
-        'limit': '1',
+        'limit': '14',
         'convert': currency_choice
     }
     headers = {
@@ -386,7 +386,7 @@ def fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_c
     currency = currency_choice
     parameters = {
         'start': str(offset + 1),
-        'limit': '1',
+        'limit': '14',
         'convert': currency
     }
     headers = {
