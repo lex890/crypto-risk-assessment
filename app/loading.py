@@ -1,7 +1,7 @@
 import threading
 import FreeSimpleGUI as sg
 from . import request_api as req
-from .search_screen import search_screen
+from . import search_screen as ssc
 from PIL import Image, ImageSequence
 import io
 
@@ -35,20 +35,69 @@ def show_loading_window(location=None):
     ]
     return sg.Window('Loading', layout, finalize=True, keep_on_top=True, no_titlebar=True, location=location)
 
-def show_throbber(location=(None, None)):
-    layout = [
-        [sg.Image(key='-GIF-')]
-    ]
-    return sg.Window('', layout, location=location, finalize=True, keep_on_top=True, no_titlebar=True, transparent_color=sg.theme_background_color(), background_color=sg.theme_background_color(), element_padding=(0,0), margins=(0,0))
+def show_throbber(location=(None, None), gif_filename='app/assets/images/spin.gif'):
+    """
+    Create and return a throbber (loading spinner) window with animated GIF.
+
+    Args:
+        location (tuple): Screen coordinates for window placement.
+        gif_filename (str): Path to the spinner GIF file.
+
+    Returns:
+        tuple: (sg.Window object, list of GIF frames in bytes)
+    """
+    layout = [[sg.Image(key='-GIF-')]]
+
+    try:
+        gif = Image.open(gif_filename)
+        frames = [f.convert("RGBA") for f in ImageSequence.Iterator(gif)]
+
+        byte_frames = []
+        for frame in frames:
+            # Create a clean background
+            background = Image.new("RGBA", gif.size, (255, 255, 255, 255))  # White opaque background
+            background.paste(frame, (0, 0), mask=frame)
+            with io.BytesIO() as output:
+                background.save(output, format="PNG")
+                byte_frames.append(output.getvalue())
+
+        if location == (None, None):
+            gif_width, gif_height = gif.size
+            screen_width, screen_height = sg.Window.get_screen_size()
+            location = (
+                screen_width // 2 - gif_width // 2,
+                screen_height // 2 - gif_height // 2
+            )
+
+    except Exception as e:
+        print(f"[Throbber Error] Failed to load GIF: {e}")
+        byte_frames = []
+
+    # Use solid white background — avoid transparency entirely
+    window = sg.Window(
+        '',
+        layout,
+        location=location,
+        finalize=True,
+        keep_on_top=True,
+        no_titlebar=True,
+        background_color='white',  # match our GIF frame background
+        element_padding=(0, 0),
+        margins=(0, 0)
+    )
+
+    return window, byte_frames
+
+
 
 # Main wrapper function
-def login_loading(api_key, api_choice, currency_choice):
+def login_loading(api_key, api_choice, currency_choice='USD'):
     result_holder = {}
     progress_holder = {'value': 0, 'status': 'Initializing...'}
 
-    # Create and show the loading screen first
+    # Create and show the loading screen
     screen_width, screen_height = sg.Window.get_screen_size()
-    window_width, window_height = 400, 120  # Approximate size of your loading window
+    window_width, window_height = 400, 120 
     center_x = (screen_width - window_width) // 2
     center_y = (screen_height - window_height) // 2
 
@@ -158,12 +207,11 @@ def next_screen_loading(data, api_key, api_choice, currency_choice):
 
     return result_holder['new_data']
 
-def search_screen_loading(main_window, data, current_page, rows_per_page, user_search, filepath, api_key, currency_choice):
+def search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath):
+    # store return values 
     result_holder = {}
 
-    overlay_win = show_dimmed_overlay()
-
-    # --- GIF animation setup ---
+    # GIF animation setup 
     gif_filename = 'app/assets/images/spin.gif'
     win_location = (None, None)
     try:
@@ -182,13 +230,13 @@ def search_screen_loading(main_window, data, current_page, rows_per_page, user_s
     except Exception as e:
         print(f"Error loading GIF: {e}")
         byte_frames = []
-
-    throbber_win = show_throbber(location=win_location)
+    # Render throbber gif
+    throbber_win, byte_frames = show_throbber(location=win_location)
 
     # Background thread for search
     def target():
         try:
-            result_holder['value'] = search_screen(main_window, data, current_page, rows_per_page, user_search, filepath, api_key, currency_choice)
+            result_holder['value'] = ssc.search_window(api_key, api_choice, search_query, currency_choice, filepath)
         except Exception as e:
             result_holder['error'] = e
 
@@ -208,10 +256,11 @@ def search_screen_loading(main_window, data, current_page, rows_per_page, user_s
             break
 
     throbber_win.close()
-    overlay_win.close()
 
     if 'error' in result_holder:
+        print('nom nom')
         raise result_holder['error']
 
-    search_window, key_to_data = result_holder.get('value', (None, None))
-    return search_window, key_to_data
+    search_win_layout, search_terms = result_holder.get('value', (None, None))
+    search_window = sg.Window('Search Result', search_win_layout, size=(540, 565), keep_on_top=True, modal=True, no_titlebar=True, finalize=True)
+    return search_window, search_terms

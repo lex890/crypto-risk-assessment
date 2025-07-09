@@ -1,58 +1,261 @@
 import FreeSimpleGUI as sg
 from . import get_images as img
 from . import plot_graphs as plg
+from .score_dict import descriptions, get_main_desc
 
 sg.theme('LightGrey1')
+pie_charts = []
 
-def risk_assessment_window(window, data, row=0):
-    if row < len(data):
-        score_data = data[row] if data[row] else data[-1]
-    else:
-        score_data = data[-1]
-    pie_charts = []  # Prepare list to hold all charts to update in batch
+def update_score_window(window, data):
+    # Prepare list to hold all charts to update in batch
+    chart_data = data[-1]
+    print('chart_data', chart_data)
 
-    #iterate through the score data to create pie charts
+    # Clear previously rendered graph
+    if len(pie_charts) > 10:
+        pie_charts.clear()
+
+    #Iterate through the score data to create pie charts
     for i in range(11):
         canvas_key = f'-SCORE{i}-' if i > 0 else '-MAINSCORE-'
 
         if canvas_key == '-MAINSCORE-':
-            chart_data = score_data[-1]  # Main score uses 10 values
+            chart_data = data[-1]
+            print('chart_data', chart_data)
             fig = plg.create_pie_chart(chart_data, figsize=(3, 3))
             is_main_score_flag = True
         else:
-            chart_data = score_data[13 + (i - 1)]  # Individual scores
+            chart_data = data[13 + (i - 1)]  # Individual scores
             fig = plg.create_pie_chart(chart_data)
             is_main_score_flag = False
         # Store the figure, canvas key, chart data, and is_main_score flag
         pie_charts.append((canvas_key, fig, chart_data, is_main_score_flag))
-
     # Second pass: draw all figures (separated from creation)
     for canvas_key, fig, chart_data, is_main_score_flag in pie_charts:
         if canvas_key in window.AllKeysDict:
             canvas_elem = window[canvas_key]
             plg.draw_figure(canvas_elem, fig, canvas_key, chart_data, window, is_main_score_flag)
 
-def update_risk_window(main_window, selected_row, currency_choice):
-    main_window['-LOGO-'].update(data=img.get_image(selected_row[7]), size=(100, 100))
-    main_window['-RANK-'].update(value=f'#{selected_row[0]}')
-    main_window['-NAME-'].update(value=selected_row[1])
-    main_window['-SYMB-'].update(value=selected_row[8])
-    main_window['-DATE-'].update(value=f'Date: {selected_row[10]}')
-    main_window['-DESC-'].update(value=f'{selected_row[9]}')
-    main_window['-WARNING-IMG-'].update(filename=get_warning_image(selected_row[23]))
-    main_window['-PRICE-LABEL-'].update(f'Price ({currency_choice}): {selected_row[2]}')
-    main_window['-MCAP-LABEL-'].update(f'Market Cap ({currency_choice}): {selected_row[6]}') 
+def main_score_graph_popup(window, chart_data):
+    print('pie_charts[0]: ', pie_charts[0])
+    _, figure, chart_data, is_main_score = pie_charts[0]
+    canvas_key_new = "-MAINSCORE-WINDOW-"
+    canvas_elem = window[canvas_key_new]
+    plg.draw_figure(canvas_elem, figure, canvas_key_new, chart_data, window, is_main_score)
 
+def update_risk_window(main_window, selected_coin, currency_choice):
+    if len(pie_charts) > 10:
+        pie_charts.clear()
+    warning_image, _ = get_warning_image(selected_coin[23])
+    
+    main_window['-LOGO-'].update(data=img.get_image(selected_coin[7]), size=(100, 100))
+    main_window['-RANK-'].update(value=f'#{selected_coin[0]}')
+    main_window['-NAME-'].update(value=selected_coin[1][:13])
+    main_window['-SYMB-'].update(value=selected_coin[8])
+    main_window['-DATE-'].update(value=f'Date: {selected_coin[10]}')
+    main_window['-DESC-'].update(value=f'{selected_coin[9]}')
+    main_window['-WARNING-IMG-'].update(filename=warning_image)
+    main_window['-PRICE-LABEL-'].update(f'Price ({currency_choice}): {selected_coin[2]}')
+    main_window['-MCAP-LABEL-'].update(f'Market Cap ({currency_choice}): {selected_coin[6]}')
+    
 def get_warning_image(total_score):
-    total_score = int(total_score)
+    if not isinstance(total_score, int):
+        total_score = int(total_score)
+
     print('this is total score: ',total_score)
-    if total_score >= 75:
+    if total_score >= 70:
         warning_image = 'app/assets/images/ref-good.png'
-    elif total_score >= 40:
+        warning_message = 'Low Risk'
+    elif total_score > 50:
         warning_image = 'app/assets/images/ref-warning.png'
+        warning_message = 'Med-Low Risk'
+    elif total_score > 30:
+        warning_image = 'app/assets/images/ref-warning.png'
+        warning_message = 'Med-High Risk'
     elif total_score >= 0:
         warning_image = 'app/assets/images/ref-danger.png'
-    return warning_image
+        warning_message = 'High Risk'
+    return warning_image, warning_message
+
+def main_score_window(chart_data):
+    HEADLINE_FONT = ("Helvetica", 20, "bold")
+    BODY_FONT     = ("Calibri",   12, "bold")
+    MAIN_DESC     = ("Calibri",   15)
+    CATEGORY_FONT = ("Calibri",   14, "bold")
+    BODY_FONT_COLOR = '#8e8e8e'
+    exit_arrow = 'app/assets/images/right-arrow.png'
+
+    score = [
+        [  
+            sg.Canvas(
+                key="-MAINSCORE-WINDOW-", 
+                size=(75, 75), 
+                tooltip='Overall Assessment Score',
+                background_color='#F0F0F0')
+        ]
+    ]
+    
+    low_risk_box = [
+        [
+            sg.Text('', size=(4, 2), background_color='#07DB07', border_width=0, relief='solid', pad=((0, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#39D70B', border_width=0, relief='solid', pad=((0, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#76D210', border_width=0, relief='solid', pad=((0, 0), 0))
+        ],
+        [
+            sg.Text('Low Risk', font=CATEGORY_FONT, text_color='#07DB07', pad=((0, 0), 0))
+        ],
+        [
+            sg.Text('80-100', font=CATEGORY_FONT, pad=((0, 0), 0))
+        ]
+    ]
+
+    low_medium_risk_box = [
+        [
+            sg.Text('', size=(4, 2), background_color='#AECD15', border_width=0, relief='solid', pad=((32, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#FFC61B', border_width=0, relief='solid', pad=((0, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#F0F0F0', border_width=0, relief='solid', pad=((0, 0), 0))
+        ],
+        [
+            sg.Text('Low-Medium Risk', font=CATEGORY_FONT, text_color='#AECD15', pad=((30, 0), 0))
+        ],
+        [
+            sg.Text('60-79', font=CATEGORY_FONT, pad=((30, 0), 0))
+        ]
+    ]
+
+    medium_high_risk_box = [
+        [
+            sg.Text('', size=(4, 2), background_color='#F7A516', border_width=0, relief='solid', pad=((32, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#EE8311', border_width=0, relief='solid', pad=((0, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#F0F0F0', border_width=0, relief='solid', pad=((0, 0), 0))
+        ],
+        [
+            sg.Text('Medium-High Risk', font=CATEGORY_FONT, text_color='#F7A516', pad=((30, 0), 0))
+        ],
+        [
+            sg.Text('40-59', font=CATEGORY_FONT, pad=((30, 0), 0))
+        ]
+    ]
+
+    high_risk_box = [
+        [
+            sg.Text('', size=(4, 2), background_color='#E45D0C', border_width=0, relief='solid', pad=((32, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#DB3807', border_width=0, relief='solid', pad=((0, 0), 0)),
+            sg.Text('', size=(4, 2), background_color='#da3200', border_width=0, relief='solid', pad=((0, 0), 0))
+        ],
+        [
+            sg.Text('High Risk', font=CATEGORY_FONT, text_color='#E45D0C', pad=((30, 0), 0))
+        ],
+        [
+            sg.Text('1-39', font=CATEGORY_FONT, pad=((30, 0), 0))
+        ]
+    ]
+
+    assessment_guide_box = [
+        [
+            sg.Column(low_risk_box, pad=((0, 32), (0, 0))),
+            sg.VerticalSeparator(),
+            sg.Column(low_medium_risk_box, pad=((0, 32), (0, 0))),
+            sg.VerticalSeparator(),
+            sg.Column(medium_high_risk_box, pad=((0, 32), (0, 0))),
+            sg.VerticalSeparator(),
+            sg.Column(high_risk_box, pad=((0, 0), (0, 0)))
+        ]
+    ]
+
+    
+    layout = [
+        [
+            sg.Text('Overall Assessment Score', font=HEADLINE_FONT, pad=((30, 0), (20, 0))), 
+            sg.Push(), 
+            sg.Image(exit_arrow, pad=((0, 30), (20, 0)), enable_events=True, key='-EXIT-')
+        ],
+        [
+            sg.Text('The overall assessment based on the score categories', font=BODY_FONT, text_color=BODY_FONT_COLOR, pad=((30, 0), (0, 0))), 
+            sg.Push()
+        ],
+        [sg.HorizontalSeparator(pad=((30, 30), (10, 0)))],
+        [
+            sg.Column(score, pad=((25, 0), (20, 0))),
+            sg.Push(),
+            sg.Text(get_main_desc(pie_charts[0][2]), size=(45, 10), font=MAIN_DESC,
+                    pad=((0, 20), (0, 0)))
+        ],
+        [
+            sg.Push(),
+            sg.Column(assessment_guide_box, pad=((0, 0), (60, 0))),
+            sg.Push()
+        ]
+    ]
+
+    window = sg.Window(
+        "Assessment Score Guide",
+        layout,
+        size=(850, 650),
+        modal=True,
+        keep_on_top=True,
+        finalize=True,
+        no_titlebar=True
+    )
+    main_score_graph_popup(window, chart_data)
+
+    return window
+
+def sub_score_window(chart_data, chart_key):
+    HEADER_CATEGORY_FONT = ("Helvetica", 20, 'bold')
+    CATEGORY_FONT = ("Helvetica", 12)
+    BODY_FONT     = ("Courier New", 14)    
+    
+    title, low_desc, mid_desc, high_desc = descriptions[chart_key]
+    exit_arrow = 'app/assets/images/right-arrow.png'
+    
+    score_chart = int(chart_data)*10
+    
+    warning_image, warning_message = get_warning_image(score_chart)
+    print('score_chart', score_chart)
+    if score_chart >= 70:
+        category_desc = low_desc
+    elif score_chart > 50:
+        category_desc = mid_desc
+    elif score_chart > 30:
+        category_desc = mid_desc
+    elif score_chart >= 0:
+        category_desc = high_desc
+    else:
+        category_desc = 'No Data Available.'
+
+    layout = [
+        [
+            sg.Text(title, font=HEADER_CATEGORY_FONT, pad=((30, 0), (30, 0))),
+            sg.Text('',pad=((0, 0), (30, 0)), expand_x=True),
+        ],
+        [
+            sg.Image(warning_image,pad=((30, 0), (10, 0))),
+            sg.Text(warning_message, font=CATEGORY_FONT, pad=((5, 0), (10, 0))),
+            sg.Text('',pad=((0, 0), (30, 0)), expand_x=True)
+        ],
+
+        [
+            sg.Text(category_desc, font=BODY_FONT, justification="left", pad=((50, 0), (10, 0)), size=(48, 10))
+        ],
+
+        [
+            sg.Text('',pad=((0, 0), (0, 0)), expand_x=True),
+            sg.Image(exit_arrow, pad=((0, 30), (0, 0)), enable_events=True, key='-EXIT-')
+        ]
+    ]
+
+    window = sg.Window(
+        "Assessment Score Guide",
+        layout,
+        size=(650, 400),
+        modal=True,
+        keep_on_top=True,
+        finalize=True,
+        no_titlebar=True
+    )
+
+    return window
 
 def marquee_effect(main_window, marquee_texts):
     for i, text in enumerate(marquee_texts):
@@ -61,12 +264,12 @@ def marquee_effect(main_window, marquee_texts):
         marquee_texts[i] = scrolled_text  # Save new state
         main_window[f'-CATEGORY{i}-'].update(scrolled_text)
 
-def score_window(data, headings):
+def score_window(data):
     # crypto icon/logo
     logo = [
         [
             sg.Image(img.get_image(data[0][7]), size=(100, 100), key='-LOGO-',
-                     background_color='#FFFFFF')
+                     background_color='#F8F8F8')
         ]
     ]
     image_box = [
@@ -91,10 +294,10 @@ def score_window(data, headings):
 
     ranking_box = [
         [
-            sg.Column(ranking_container, pad=((18, 0), (9, 0)))
+            sg.Column(ranking_container, pad=((15, 0), (9, 0)))
         ]
     ]
-
+    warning_image, _ = get_warning_image(data[0][23])
     name = [
         [
             sg.Text(data[0][1],                   # crypto name
@@ -109,13 +312,14 @@ def score_window(data, headings):
             key='-SYMB-'),
 
             sg.Image(
-                get_warning_image(data[0][23]), 
+                warning_image, 
                 size=(30, 30), 
                 key='-WARNING-IMG-', 
                 pad=((3, 0), (0, 72))
             )
         ]
     ]
+
     date_text = [
         [
             sg.Text(f'Date: {data[0][10]}',   # date added
@@ -125,6 +329,7 @@ def score_window(data, headings):
             key='-DATE-')  
         ]
     ]
+
     date_box = [
         [
             sg.Column(date_text, pad=((0, 0),(0, 0)))
@@ -163,16 +368,9 @@ def score_window(data, headings):
         ]
     ]
 
-
-    warning_image_box = [
-        [
-            sg.Image(get_warning_image(data[0][23]), size=(50, 50), key='-WARNING-IMG-', pad=((0, 0), (0, 0))),   
-        ]
-    ]
-
     information_box = [
         [
-            sg.Column(ranking_box, size=(50, 50), pad=((0, 0),(0, 0))),
+            sg.Column(ranking_box, size=(65, 50), pad=((0, 0),(0, 0))),
             sg.Column(name, size=(350, 50), pad=((0, 0),(0, 0)))
         ],
         [
@@ -236,11 +434,10 @@ def score_window(data, headings):
         ]
 
     ]
-    assessment_criteria = headings[13:23]
     
     assessment_score = [
         # donut graphs scores
-        sg.Canvas(key=f"-SCORE{i+1}-", size=(80, 80), tooltip=assessment_criteria[i])
+        sg.Canvas(key=f"-SCORE{i+1}-", size=(80, 80), tooltip=descriptions[f"-SCORE{i+1}-"][0])
         for i in range(10)
     ]
     criteria_text = [
@@ -261,9 +458,6 @@ def score_window(data, headings):
                         key="-MAINSCORE-", 
                         size=(75, 75), 
                         tooltip='Overall Assessment Score')
-                ],
-                [   
-                    sg.Text('Overall Score', font='Any 12 bold')
                 ]
             ]
 
@@ -275,7 +469,7 @@ def score_window(data, headings):
     score_labels_upper = [[
         sg.Column(
             [criteria_text[i]],
-            background_color='#F0F0F0',
+            background_color='#ffffff',
             size=(score_labels_width, score_labels_height),
             pad=(up_pads[i], (0, 0))
         )
@@ -287,7 +481,7 @@ def score_window(data, headings):
     score_labels_lower = [[
         sg.Column(
             [criteria_text[i]],
-            background_color='#F0F0F0',
+            background_color='#ffffff',
             size=(score_labels_width, score_labels_height),
             pad=(d_pads[i - 5], (0, 0))
         )
@@ -296,15 +490,19 @@ def score_window(data, headings):
 
     upper_content = [
         [
-            sg.Column(info),
-            sg.Column(score, element_justification='center', vertical_alignment='top')
+            sg.Text('', expand_x=True),
+            sg.Text('Overall Assessment Score',pad=((0, 25), (0, 0)), font=("Helvetica", 16, "bold"))
+        ],
+        [
+            sg.Column(info, pad=((0, 0), (0, 0))),
+            sg.Column(score, pad=((0, 0), (0, 0)),element_justification='center')
         ]
     ]
 
 
     lower_content = [
         [
-            sg.Column(score_labels_upper, pad=((0, 0), (0, 0)), background_color='#F0F0F0')
+            sg.Column(score_labels_upper, pad=((0, 0), (0, 0)), background_color='#ffffff')
         ],
         [
             sg.Column(
@@ -312,7 +510,7 @@ def score_window(data, headings):
             pad=((0, 0), (0, 0)))
         ],
         [
-            sg.Column(score_labels_lower, pad=((0, 0), (0, 0)),background_color='#F0F0F0')
+            sg.Column(score_labels_lower, pad=((0, 0), (0, 0)),background_color='#ffffff')
         ],
         [
             sg.Column(
@@ -325,14 +523,14 @@ def score_window(data, headings):
     upper_window = [
         [
             sg.Column(
-            upper_content, pad=((70, 0), (0, 0)))
+            upper_content, pad=((0, 0), (0, 0)))
         ]
     ]
 
     lower_window = [
         [
             sg.Column(
-            lower_content, pad=((70, 0), (0, 0)))
+            lower_content, pad=((0, 0), (0, 0)))
         ]
     ]
 

@@ -1,15 +1,41 @@
-import csv
 import random
 import requests
-import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 import logging
+from textblob import TextBlob
+from sklearn.ensemble import IsolationForest
+import numpy as np
 from . import keystore
+from cerberus import Validator
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from .news_spider import CryptoNewsSpider
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+crypto_schema = {
+    '#': {'type': 'integer', 'required': True},
+    'Name': {'type': 'string', 'required': True, 'empty': False},
+    'Current Price': {'type': 'string', 'required': True, 'empty': False},
+    '1h%': {'type': 'string', 'required': False, 'nullable': True},
+    '24h%': {'type': 'string', 'required': True, 'empty': False,  'nullable': True},
+    '7d%': {'type': 'string', 'required': False, 'nullable': True},
+    'Market Cap': {'type': 'string', 'required': True, 'empty': False},
+    'Logo': {'type': 'string', 'required': False, 'nullable': True},
+    'Symbol': {'type': 'string', 'required': True, 'empty': False},
+    'Description': {'type': 'string', 'required': False, 'nullable': True},
+    'Creation Date': {'type': 'string', 'required': True, 'empty': False, 'nullable': True, 'regex': r'^\d{4}-\d{2}-\d{2}$'},
+    'Website': {'type': 'string', 'required': False, 'nullable': True},
+    'Source Code': {'type': 'string', 'required': False, 'nullable': True},
+}
+
+# Initialize Cerberus validator
+validator = Validator(crypto_schema, allow_unknown=False)
+# Initialize global cache for Ethereum's volume-to-market-cap ratio
+ethereum_ratio_cache = None
 
 score_header = [
     "Trading Volume Consistency",
@@ -21,20 +47,25 @@ score_header = [
     "Community & Social Media Presence",
     "Transaction Patterns & Anomalies",
     "Whitepaper & Roadmap Execution",
-    "Regulatory Compliance & Legal Standing"
+    "Regulatory Compliance & Legal Standing",
+    "Sentiment Analysis",
+    "Anomaly Detection Score"
 ]
-ethereum_ratio_cache = None
+
 # Load API keys
 COINGECKO_DEMO_API_KEY = keystore.load_api_key('CoinGecko', 'CGKEY')
-print('this is demo api: ', COINGECKO_DEMO_API_KEY)
+GITHUB_TOKEN = keystore.load_api_key('GitHub', 'GITHUB_TOKEN')
+NEWSAPI_KEYS = [
+    "f828a52f2080498dacd9513ccf67d8bc",
+    "74ba9d945b144ae7b77c1fb2db4f7afb",
+    "753aa7b2266549d5a327cc06421b5641",
+    "f828a52f2080498dacd9513ccf67d8bc"
+    ]
 if not COINGECKO_DEMO_API_KEY:
     raise ValueError("COINGECKO_DEMO_API_KEY is required in settings.cfg")
 
-GITHUB_TOKEN = keystore.load_api_key('GitHub', 'GITHUB_TOKEN')
-
 # Cache for symbol to coin ID mapping
 symbol_to_coin_id_cache = {}
-
 def get_coin_id(symbol):
     """Map a coin symbol to its CoinGecko coin ID."""
     symbol = symbol.upper()
@@ -57,6 +88,144 @@ def get_coin_id(symbol):
     except requests.RequestException as e:
         logger.error(f"Error fetching coin list: {e}")
         return None
+
+def fetch_news_headlines(symbol):
+    """Fetch news headlines using NewsAPI with multiple API keys and rate limit handling."""
+    for api_key in NEWSAPI_KEYS:
+        try:
+            url = f"https://newsapi.org/v2/everything?q={symbol}&language=en&pageSize=5&sortBy=publishedAt&apiKey={api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            articles = data.get("articles", [])
+            return [article["title"] for article in articles if "title" in article]
+        except requests.HTTPError as e:
+            if response.status_code == 429:
+                logger.warning(f"NewsAPI rate limit reached for key {api_key}. Trying next key...")
+                time.sleep(2 ** NEWSAPI_KEYS.index(api_key))  # Exponential backoff
+                continue
+            else:
+                logger.error(f"HTTP error for {symbol} with key {api_key}: {e}")
+                return [f"No recent news available for {symbol}"]
+        except Exception as e:
+            logger.error(f"Failed to fetch news for {symbol} with key {api_key}: {e}")
+            return [f"No recent news available for {symbol}"]
+    logger.error(f"All NewsAPI keys exhausted for {symbol}")
+    return [f"No recent news available for {symbol}"]
+
+def get_sentiment_score(symbol):
+    """Perform sentiment analysis on fetched headlines."""
+    headlines = fetch_news_headlines(symbol)
+    scores = []
+    for text in headlines:
+        blob = TextBlob(text)
+        scores.append(blob.sentiment.polarity)
+    if not scores:
+        return 5
+    avg_score = sum(scores) / len(scores)
+    if avg_score >= 0.5:
+        return 10
+    elif avg_score >= 0.25:
+        return 8
+    elif avg_score >= 0.1:
+        return 6
+    elif avg_score >= 0:
+        return 4
+    else:
+        return 2
+def score_news_coverage(symbol, crypto_name):
+    """Score news coverage based on article count from scraped news."""
+    try:
+        # Configure Scrapy settings
+        settings = get_project_settings()
+        settings.set('USER_AGENT', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        settings.set('ROBOTSTXT_OBEY', True)
+        settings.set('DOWNLOAD_DELAY', 2.0)
+
+        # Initialize spider and process
+        process = CrawlerProcess(settings)
+        results = []
+
+        def collect_results(item, response, spider):
+            results.append(item)
+
+        process.crawl(CryptoNewsSpider, symbol=symbol, crypto_name=crypto_name, callback=collect_results)
+        process.start()
+
+        article_count = len(results)
+        logger.info(f"Found {article_count} news articles for {crypto_name} ({symbol})")
+
+        if article_count >= 10:
+            return 10
+        elif article_count >= 5:
+            return 8
+        elif article_count >= 2:
+            return 6
+        elif article_count >= 1:
+            return 4
+        return 2
+    except Exception as e:
+        logger.error(f"Error fetching news for {symbol}: {e}")
+        return 3
+
+def fetch_transaction_data(symbol):
+    """Fetch transaction data from CoinGecko and prepare it for anomaly detection."""
+    try:
+        coin_id = symbol_to_coin_id_cache.get(symbol)
+        if not coin_id:
+            # fallback to API search if not cached
+            list_url = f"https://api.coingecko.com/api/v3/coins/list?x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
+            resp = requests.get(list_url)
+            resp.raise_for_status()
+            for coin in resp.json():
+                if coin['symbol'].lower() == symbol.lower():
+                    coin_id = coin['id']
+                    symbol_to_coin_id_cache[symbol] = coin_id
+                    break
+            if not coin_id:
+                raise ValueError(f"CoinGecko ID not found for {symbol}")
+
+        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart?vs_currency=usd&days=1&x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        prices = [p[1] for p in data.get('prices', [])]
+        volumes = [v[1] for v in data.get('total_volumes', [])]
+        combined = np.column_stack((prices, volumes))
+        return combined[:50]  # limit to 50 samples
+    except Exception as e:
+        logger.error(f"Failed to fetch transaction data from CoinGecko for {symbol}: {e}")
+        return np.array([[random.uniform(0, 1) for _ in range(2)] for _ in range(50)])
+
+def detect_anomalies(symbol):
+    """Use Isolation Forest to detect anomalies in mock transaction data."""
+    try:
+        data = fetch_transaction_data(symbol)
+        model = IsolationForest(contamination=0.1)
+        preds = model.fit_predict(data)
+        anomaly_ratio = sum(preds == -1) / len(preds)
+        if anomaly_ratio <= 0.05:
+            return 10
+        elif anomaly_ratio <= 0.1:
+            return 9
+        elif anomaly_ratio <= 0.15:
+            return 8
+        elif anomaly_ratio <= 0.2:
+            return 7
+        elif anomaly_ratio <= 0.25:
+            return 6
+        elif anomaly_ratio <= 0.3:
+            return 5
+        elif anomaly_ratio <= 0.35:
+            return 4
+        elif anomaly_ratio <= 0.4:
+            return 3
+        elif anomaly_ratio <= 0.45:
+            return 2
+        return 1
+    except Exception as e:
+        logger.error(f"Error in anomaly detection for {symbol}: {e}")
+        return 0
 
 def make_coingecko_request(url, retries=3, backoff_factor=2):
     """Make a CoinGecko API request with retry logic for rate limits."""
@@ -102,7 +271,7 @@ def make_github_request(url, retries=3, backoff_factor=2):
     raise Exception(f"Failed to fetch {url} after {retries} attempts")
 
 def score_trading_volume_consistency(volume_24h, market_cap):
-    """Score trading volume consistency relative to Bitcoin's volume-to-market-cap ratio."""
+    """Score trading volume consistency relative to Ethereum's volume-to-market-cap ratio."""
     global ethereum_ratio_cache
 
     if not volume_24h or not market_cap or volume_24h == 'N/A' or market_cap == 'N/A':
@@ -119,7 +288,7 @@ def score_trading_volume_consistency(volume_24h, market_cap):
         coin_ratio = coin_volume / coin_market_cap
         logger.debug(f"Coin ratio for volume/market_cap: {coin_ratio:.6f}")
 
-        # Fetch Bitcoin's ratio if not cached
+        # Fetch Ethereum's ratio if not cached
         if ethereum_ratio_cache is None:
             url = 'https://api.coingecko.com/api/v3/coins/ethereum'
             response = make_coingecko_request(url)
@@ -127,7 +296,7 @@ def score_trading_volume_consistency(volume_24h, market_cap):
             eth_volume = data.get('market_data', {}).get('total_volume', {}).get('usd', 0)
             eth_market_cap = data.get('market_data', {}).get('market_cap', {}).get('usd', 0)
             if eth_market_cap == 0:
-                logger.error("Etherum market cap is zero, cannot compute ratio")
+                logger.error("Ethereum market cap is zero, cannot compute ratio")
                 return 1
             ethereum_ratio_cache = eth_volume / eth_market_cap
             logger.debug(f"Ethereum ratio cached: {ethereum_ratio_cache:.6f}")
@@ -168,7 +337,7 @@ def score_trading_volume_consistency(volume_24h, market_cap):
         logger.error(f"Error calculating trading volume consistency: {e}")
         return 0
     except requests.RequestException as e:
-        logger.error(f"Error fetching Bitcoin data: {e}")
+        logger.error(f"Error fetching Ethereum data: {e}")
         return 0
 def score_market_cap_liquidity(market_cap):
     """Score market cap liquidity, handling blank or invalid inputs."""
@@ -177,15 +346,25 @@ def score_market_cap_liquidity(market_cap):
         return 0
     try:
         market_cap = float(str(market_cap).replace(',', ''))
-        if market_cap >= 10_000_000_000:
+        if market_cap >= 8_000_000_000:
             return 10
-        elif market_cap >= 1_000_000_000:
+        elif market_cap >= 4_000_000_000:
+            return 9
+        elif market_cap >= 2_000_000_000:
             return 8
-        elif market_cap >= 100_000_000:
+        elif market_cap >= 1_000_000_000:
+            return 7
+        elif market_cap >= 500_000_000:
             return 6
-        elif market_cap >= 10_000_000:
+        elif market_cap >= 100_000_000:
+            return 5
+        elif market_cap >= 50_000_000:
             return 4
-        return 0
+        elif market_cap >= 25_000_000:
+            return 3
+        elif market_cap >= 10_000_000:
+            return 2
+        return 1
     except (ValueError, TypeError) as e:
         logger.error(f"Error calculating market cap liquidity: {e}")
         return 0
@@ -413,10 +592,27 @@ def score_regulatory_compliance(symbol):
         logger.error(f"Error fetching regulatory compliance for {symbol}: {e}")
         return 3
 
-def evaluate_cryptos(cryptos, currency_choice):
-    """Evaluate cryptocurrencies and compute scores."""
+def evaluate_cryptos(cryptos, currency_choice, progress_callback=None):
+    print('this is inside evaluate_cryptos: ', cryptos)
+    """
+    Evaluate cryptocurrencies based on various scoring metrics with input validation.
+    
+    Args:
+        cryptos: List of dictionaries containing cryptocurrency data.
+        currency_choice: The currency to use for pricing (e.g., 'usd').
+    
+    Returns:
+        List of dictionaries with scores and original data.
+    """
     results = []
-    for coin in cryptos:
+    
+    # Validate each crypto entry
+    for idx, coin in enumerate(cryptos):
+        if not validator.validate(coin):
+            logger.error(f"Validation failed for coin {coin.get('Name', 'Unknown')}: {validator.errors}")
+            continue  # Skip invalid entries
+            # Alternatively, raise an exception: raise ValueError(f"Validation failed: {validator.errors}")
+
         rank_number = str(coin.get('#'))
         crypto_name = coin.get('Name')
         logger.info(f'Retrieved: {crypto_name}')
@@ -431,18 +627,21 @@ def evaluate_cryptos(cryptos, currency_choice):
         creation_date = coin.get('Creation Date')
         website = coin.get('Website')
         source_code = coin.get('Source Code')
-
+        
+        # Calculate scores (your existing scoring logic)
+        score_social = 10 if crypto_name == 'Bitcoin' else get_sentiment_score(symbol)
+        score_txn = 10 if crypto_name == 'Bitcoin' else detect_anomalies(symbol)
         score_volume = 10 if crypto_name == 'Bitcoin' else score_trading_volume_consistency(volume_24h, market_cap)
         score_liquidity = 10 if crypto_name == 'Bitcoin' else score_market_cap_liquidity(market_cap)
         score_age = 10 if crypto_name == 'Bitcoin' else score_token_age(creation_date)
         score_dev = 10 if crypto_name == 'Bitcoin' else score_developer_transparency(symbol)
         score_audit = 10 if crypto_name == 'Bitcoin' else score_contract_audit(symbol)
         score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)
-        score_social = 10 if crypto_name == 'Bitcoin' else score_social_media_presence(symbol)
-        score_txn = 10 if crypto_name == 'Bitcoin' else score_transaction_patterns(symbol)
         score_whitepaper = 10 if crypto_name == 'Bitcoin' else score_whitepaper_roadmap(symbol)
         score_regulation = 10 if crypto_name == 'Bitcoin' else score_regulatory_compliance(symbol)
-        if score_exchange <= 7 and crypto_name =='Ethereum':
+        
+        # Ethereum-specific score adjustments
+        if score_exchange <= 7 and crypto_name == 'Ethereum':
             score_exchange = score_exchange + 3
         if score_social <= 7 and crypto_name == 'Ethereum':
             score_social = score_social + 3
@@ -454,8 +653,11 @@ def evaluate_cryptos(cryptos, currency_choice):
             score_dev = score_dev + 3 
         if crypto_name == 'Ethereum' and score_txn <= 7:
             score_txn = score_txn + 3
-        score_volume = int((score_liquidity + score_exchange + score_audit)/3)
-
+        
+        # Adjust score_volume based on other metrics
+        score_volume = int((score_liquidity + score_exchange + score_audit) / 3)
+        
+        # Compile scores into result dictionary
         scores = {
             '#': rank_number,
             'Name': crypto_name,
@@ -479,10 +681,13 @@ def evaluate_cryptos(cryptos, currency_choice):
             'Community and Social Media Presence': score_social,
             'Transaction Patterns and Anomalies': score_txn,
             'Whitepaper and Roadmap Assessment': score_whitepaper,
-            'Regulatory Compliance and Legal Standing': score_regulation,
+            'Regulatory Compliance and Legal Standing': score_regulation
         }
-
         scores['Total Score'] = sum([v for k, v in scores.items() if isinstance(v, int)])
         results.append(scores)
-        time.sleep(2)  # Respect CoinGecko demo rate limits (~30 req/min)
+        if progress_callback:
+            progress = 50 + int((idx / 9) * 48)
+            progress_callback(progress, f"Evaluating cryptocurrency score for {crypto_name}")
+        time.sleep(2)  # Respect API rate limits
+    print('results', results)
     return results

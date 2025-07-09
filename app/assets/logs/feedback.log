@@ -209,3 +209,457 @@ Traceback (most recent call last):
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: cannot unpack non-iterable function object
 
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 149, in handle_main_window_events
+    app.update_table(main_window, current_page_data, rows_per_page)
+                                  ^^^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'current_page_data' where it is not associated with a value
+
+Date      : 2025-07-05 16:19:36
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 149, in handle_main_window_events
+    app.update_table(main_window, current_page_data, rows_per_page)
+                                  ^^^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'current_page_data' where it is not associated with a value
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+Date      : 2025-07-05 17:42:49
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+Date      : 2025-07-05 17:43:06
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+Date      : 2025-07-05 17:46:04
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 17, in get_search_terms
+    if (search_query in row[0].lower() or
+                        ^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'lower'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+Date      : 2025-07-05 22:02:14
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+Date      : 2025-07-05 22:02:33
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+Date      : 2025-07-05 22:06:51
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+Date      : 2025-07-05 22:09:05
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 203, in handle_main_window_events
+    search_window = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 206, in handle_main_window_events
+    app.hovery(search_window, KEY_PREFIXES, root)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 31, in hovery
+    widget.bind('<Enter>',
+    ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'bind'
+
+Date      : 2025-07-05 22:22:55
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 206, in handle_main_window_events
+    app.hovery(search_window, KEY_PREFIXES, root)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 31, in hovery
+    widget.bind('<Enter>',
+    ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'bind'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 204, in handle_main_window_events
+    search_window = app.search_window(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 144, in search_window
+    search_win_layout = render_search_window(search_terms, currency_choice, search_query)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 126, in render_search_window
+    [sg.Column(gen_result_box(entry, i), pad=((0, 0), (0, 0)))]for i, entry in enumerate(search_terms[:6])
+                                                                                         ~~~~~~~~~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+Date      : 2025-07-06 00:03:56
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 204, in handle_main_window_events
+    search_window = app.search_window(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 144, in search_window
+    search_win_layout = render_search_window(search_terms, currency_choice, search_query)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 126, in render_search_window
+    [sg.Column(gen_result_box(entry, i), pad=((0, 0), (0, 0)))]for i, entry in enumerate(search_terms[:6])
+                                                                                         ~~~~~~~~~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 204, in handle_main_window_events
+    search_window = app.search_window(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 159, in search_window
+    search_win_layout = render_search_window(search_terms, currency_choice, search_query)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 141, in render_search_window
+    [sg.Column(gen_result_box(entry, i), pad=((0, 0), (0, 0)))]for i, entry in enumerate(search_terms[:6])
+                                                                                         ~~~~~~~~~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+Date      : 2025-07-06 00:06:19
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 204, in handle_main_window_events
+    search_window = app.search_window(api_key, api_choice, search_query, currency_choice, filepath)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 159, in search_window
+    search_win_layout = render_search_window(search_terms, currency_choice, search_query)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\search_screen.py", line 141, in render_search_window
+    [sg.Column(gen_result_box(entry, i), pad=((0, 0), (0, 0)))]for i, entry in enumerate(search_terms[:6])
+                                                                                         ~~~~~~~~~~~~^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 225, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 47, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'int' object is not subscriptable
+
+Date      : 2025-07-06 02:24:25
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 225, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 47, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'int' object is not subscriptable
+
+## Please describe the issue...
+Date      : 2025-07-06 03:18:24
+User      : 
+Email     : your.email@example.com
+Type      : General Feedback
+---
+Please provide detailed information about your feedback, issue, or suggestion...
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\csv_handler.py", line 116, in currency_conversion
+    converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\forex_python\converter.py", line 111, in convert
+    raise RatesNotAvailableError("Currency Rates Source Not Ready")
+forex_python.converter.RatesNotAvailableError: Currency Rates Source Not Ready
+
+Date      : 2025-07-06 12:57:37
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\csv_handler.py", line 116, in currency_conversion
+    converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\forex_python\converter.py", line 111, in convert
+    raise RatesNotAvailableError("Currency Rates Source Not Ready")
+forex_python.converter.RatesNotAvailableError: Currency Rates Source Not Ready
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\csv_handler.py", line 116, in currency_conversion
+    converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\forex_python\converter.py", line 111, in convert
+    raise RatesNotAvailableError("Currency Rates Source Not Ready")
+forex_python.converter.RatesNotAvailableError: Currency Rates Source Not Ready
+
+Date      : 2025-07-06 13:10:59
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\csv_handler.py", line 116, in currency_conversion
+    converted_value = round(c.convert(currency_choice, new_currency_choice, numeric_value), 2)
+                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\forex_python\converter.py", line 111, in convert
+    raise RatesNotAvailableError("Currency Rates Source Not Ready")
+forex_python.converter.RatesNotAvailableError: Currency Rates Source Not Ready
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+Date      : 2025-07-06 19:45:14
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+Date      : 2025-07-06 19:50:45
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+Date      : 2025-07-06 19:51:36
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 244, in handle_main_window_events
+    app.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 49, in update_risk_window
+    warning_image, _ = get_warning_image(selected_coin[23])
+                                         ~~~~~~~~~~~~~^^^^
+TypeError: 'HorizontalSeparator' object is not subscriptable
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 223, in handle_main_window_events
+    search_window, search_terms = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+Date      : 2025-07-06 21:48:02
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\main.py", line 223, in handle_main_window_events
+    search_window, search_terms = app.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 214, in search_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 191, in target
+    result_holder['value'] = search_window(api_key, api_choice, search_query, currency_choice, filepath)
+                             ^^^^^^^^^^^^^
+NameError: cannot access free variable 'search_window' where it is not associated with a value in enclosing scope
+
+## Please describe the issue...
+Date      : 2025-07-09 21:26:00
+User      : 
+Email     : your.email@example.com
+Type      : General Feedback
+---
+Please provide detailed information about your feedback, issue, or suggestion...
+

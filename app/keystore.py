@@ -5,13 +5,18 @@ import FreeSimpleGUI as sg
 
 cfg_path='app/assets/keys/settings.cfg'
 
-def handle_keystore(login_window, current_image):
-    imagepath = current_image['-IMAGE-']
+def handle_keystore(login_window):
+    imagepath = 'app/assets/images/CMC.png' if login_window['-CRYPTO-NAME-TOGGLE-'].get() == 'CoinMarketCap' else 'app/assets/images/CG.png'
     api_choice = req.get_api_choice(imagepath)
-    cfg_key = req.get_cfg_key(imagepath)
+    cfg_key = get_cfg_key(imagepath)
     new_api_key = load_api_key(api_choice, cfg_key)
     login_window['-API-'].update(value=new_api_key)
     sg.popup_auto_close(f'Pasted the API Key for {api_choice}', auto_close_duration=2)
+
+
+def get_cfg_key(imagepath):
+    cfg_key = 'CMCKEY' if imagepath == 'app/assets/images/CMC.png' else 'CGKEY'
+    return cfg_key
 
 def save_api_key(identifier, api_key, key_name, cfg_path=cfg_path):
     
@@ -37,7 +42,7 @@ def save_api_key(identifier, api_key, key_name, cfg_path=cfg_path):
     print(f"API key saved to '{cfg_path}' under section [{identifier}].")
     print(cfg_path)
 
-def load_api_key(identifier, key_name, cfg_path=cfg_path):
+def load_api_key(identifier='CoinMarketCap', key_name='CMCKEY', cfg_path=cfg_path):
     config = configparser.ConfigParser()
     if not os.path.exists(cfg_path):
         print(f"No config file found at {cfg_path}. Please save an API key first.")

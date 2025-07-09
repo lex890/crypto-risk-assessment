@@ -1,380 +1,170 @@
 import FreeSimpleGUI as sg
-from fuzzywuzzy import process
-import csv
-from . import csv_handler as han
-from .request_api import search_via_api
+from .request_api import search_cmc, search_coingecko
 from .get_images import get_image
-from .score_handler import evaluate_cryptos
-from .main_screen import get_page_data
+from .csv_handler import read_csv
+from .feedback import send_automated_report
 
-def load_crypto_data(csv_path):
-    with open(csv_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        data = [row for row in reader]
-    return data
+def get_csv_search_terms(csv_data, search_query):
+    """Return rows where rank, name or symbol contains search_query."""
+    search_query = search_query.lower()
+    results = []
 
-def get_search_terms(data):
-    terms = []
-    for row in data:
-        terms.append(row['Name'])
-        terms.append(row['Symbol'])
-    return terms
+    for idx, row in enumerate(csv_data):
+        try:
+            rank, name, symbol = (str(row[0]).lower(),
+                                  str(row[1]).lower(),
+                                  str(row[8]).lower())
+        except IndexError:
+            # Row too short — skip and optionally log
+            print(f"Row {idx} malformed: {row}")
+            send_automated_report()
+            continue
 
-def format_large_number(num):
-    try:
-        num = float(num.replace(',', ''))  # Remove commas and convert to float
-    except (ValueError, AttributeError):
-        return num  # Return as-is if not a number
-    if num >= 1_000_000_000_000:
-        return f"{int(num / 1_000_000_000_000)}T"
-    elif num >= 1_000_000_000:
-        return f"{int(num / 1_000_000_000)}B"
-    elif num >= 1_000_000:
-        return f"{int(num / 1_000_000)}M"
-    elif num >= 1_000:
-        return f"{int(num / 1_000)}K"
-    else:
-        return str(int(num))  # Return whole number if < 1,000
+        if (search_query in rank or
+            search_query in name or
+            search_query in symbol):
+            results.append(row)
 
+    return results
 
-def search_crypto(main_window, data, current_page, rows_per_page, user_search, csvdata, search_terms, api_key, currency_choice, filepath, threshold=85, limit=10):
-    query = user_search.strip().upper()  # Convert to uppercase for consistent comparison
-    
-    # First try exact matches
-    exact_matches = []
-    for row in csvdata:
-        if (row['Name'].upper() == query or row['Symbol'].upper() == query):
-            exact_matches.append((
-                row['#'],
-                row['Name'],
-                row['Current Price'],
-                row['1h%'],
-                row['24h%'],
-                row['7d%'],
-                row['Market Cap'],
-                row['Logo'],
-                row['Symbol'],
-                row['Description'],
-                row['Creation Date'],
-                row['Website'],
-                row['Source Code'],
-                #score data
-                row['Trading Volume Consistency'],
-                row['Liquidity and Order Book Depth'],
-                row['Token Age and Market History'],
-                row['Developer and Team Transparency'],
-                row['Smart Contract Audit and Security Measures'],
-                row['Exchange Listings and Reputation'],
-                row['Community and Social Media Presence'],
-                row['Transaction Patterns and Anomalies'],
-                row['Whitepaper and Roadmap Assessment'],
-                row['Regulatory Compliance and Legal Standing'],
-                row['Total Score']
-            ))
-    
-    if exact_matches:
-        return exact_matches
-    
-    # If no exact matches, try fuzzy matching with higher threshold
-    matches = process.extract(query, search_terms, limit=limit)
-    seen = set()
-    result_list = []
-    
-    for match, score in matches:
-        if score >= threshold:
-            for row in csvdata:
-                if (row['Name'] == match or row['Symbol'] == match) and row['Symbol'] not in seen:
-                    seen.add(row['Symbol'])
-                    result_list.append((
-                        row['#'],
-                        row['Name'],
-                        row['Current Price'],
-                        row['1h%'],
-                        row['24h%'],
-                        row['7d%'],
-                        row['Market Cap'],
-                        row['Logo'],
-                        row['Symbol'],
-                        row['Description'],
-                        row['Creation Date'],
-                        row['Website'],
-                        row['Source Code'],
-                        #score data
-                        row['Trading Volume Consistency'],
-                        row['Liquidity and Order Book Depth'],
-                        row['Token Age and Market History'],
-                        row['Developer and Team Transparency'],
-                        row['Smart Contract Audit and Security Measures'],
-                        row['Exchange Listings and Reputation'],
-                        row['Community and Social Media Presence'],
-                        row['Transaction Patterns and Anomalies'],
-                        row['Whitepaper and Roadmap Assessment'],
-                        row['Regulatory Compliance and Legal Standing'],
-                        row['Total Score']
-                    ))
-    
-    if not result_list:
-        # Only call API if no matches found in local data
-        print(f"Searching API for: {query}")
-        output_tuple = search_via_api(api_key, query, currency_choice, filepath)
-        if output_tuple:  # Only proceed if API call was successful
-            result_list.append(output_tuple)
-            result_list_dict = han.convert_to_dict(result_list, currency_choice)
-            result_list_scores = evaluate_cryptos(result_list_dict, currency_choice)
-            han.export_to_csv(result_list_scores)
-            _, new_data_list = han.read_csv('app/assets/data/temp.csv')
-            han.append_csv(filepath, new_data_list)
-            
-            _, data = han.read_csv(filepath)
-            main_window['-TABLE-'].update(values=get_page_data(data, current_page, rows_per_page))
-            main_window['-PAGENO-'].update(str(current_page))
+def get_api_search_terms(api_key, api_choice, search_query, currency_choice):
+    api_choice = str(api_choice)
+    if api_choice == '1':
+        # CoinMarketCap
+        return search_cmc(api_key, search_query, currency_choice)
+    elif api_choice == '2':
+        # CoinGecko
+        return search_coingecko(api_key, search_query, currency_choice)
+    return None
 
-    return result_list if result_list else "No matches found. Please check your spelling or try a different search term."
-
-
-
-def search_screen(main_window, data, current_page, rows_per_page, user_search, filepath, api_key, currency_choice):
-    if not user_search.strip():
+def handle_search_query(api_key, api_choice, search_query, currency_choice, filepath):
+    # Handle Empty 
+    if not search_query.strip():
         return sg.Window("Invalid", [[sg.Text("No search performed.")]], finalize=True)
-
-    csv_data = load_crypto_data(filepath)
-    search_terms = get_search_terms(csv_data)
-    result = search_crypto(main_window, data, current_page, rows_per_page, user_search, csv_data, search_terms, api_key, currency_choice, filepath)
+    _, csv_data = read_csv(filepath)
     
-    print('this is the result: ', result)
-    search_header, search_window, key_to_data = generate_results(result, user_search)
-    
-    if key_to_data:
-        result_header = [
-            sg.Column(
-                search_header, 
-                size=(950, 100),
-                background_color=sg.theme_background_color(),
-                pad=((25, 0), (35, 0))
-            ),
-            sg.Push()
-        ]
-        result_container = [
-            sg.Push(),
-            sg.Column(
-                search_window, 
-                size=(650, 800), 
-                background_color="#f6f6f6", 
-                scrollable=True,
-                vertical_scroll_only=True,
-                pad=(0, (0, 45))
-            ),
-            sg.Push()
-        ]
-    else:
-        result_header = [
-            sg.Column(
-                search_header, 
-                size=(950, 100),
-                background_color=sg.theme_background_color(),
-                pad=((25, 0), (35, 0)),
-            ),
-            sg.Push()
-        ]
-        result_container = [
-            sg.Push(),
-            sg.Column(
-                search_window, 
-                size=(650, 800), 
-                background_color="#dadada", 
-                justification='center',
-                pad=(0, (0, 45))
-            ),
-            sg.Push()
-        ]
+    # this receives the whole row of matched crypto within the csv
+    search_terms = get_csv_search_terms(csv_data, search_query)
+    if not search_terms:
+        # this receives the whole row of matched crypto retrieved from API
+        search_terms = get_api_search_terms(api_key, api_choice, search_query, currency_choice)
+        if search_terms:
+            return search_terms
+        else:
+            return []
+    return search_terms
 
-    layout = [
-        result_header,
-        result_container
+def gen_result_box(row, i):
+    HEADER_FONT = ('Helvetica', 12)
+    name_col = sg.Column([
+        [sg.Text(row[1][:12], size=(15, 1), font=HEADER_FONT, key=f'-name{row[0]}-', enable_events=True)],          # coin name
+        [sg.Text(row[8], size=(7, 1), font=HEADER_FONT, key=f'-symbol{row[0]}-', enable_events=True)]           # symbol
+    ], pad=((5, 0), (0, 0)))
+
+    search_results = sg.Column(
+        [[
+            sg.Text(row[0], size=(4, 1), font=HEADER_FONT, pad=((0, 5), (0, 0)), key=f'-rank{row[0]}-', enable_events=True),
+            sg.Image(get_image(row[7], 1), pad=((5, 0), (0, 0)), key=f'-icon{row[0]}-', enable_events=True),  # icon
+            name_col,
+            sg.Text(row[2], size=(12, 1), font=HEADER_FONT, pad=((0, 0), (0, 0)),key=f'-price{row[0]}-', enable_events=True),   # price
+            sg.Text(row[6], size=(15, 1), font=HEADER_FONT, pad=((0, 0), (0, 0)), key=f'-mcap{row[0]}-', enable_events=True)    # market‑cap
+        ]]
+    )
+
+    return [[search_results],
+            [sg.HorizontalSeparator(color='#dadada', pad=((0, 0), (0, 0)))]]
+
+def gen_search_header(search_query):
+    HEADER_FONT = ('Helvetica', 18, 'bold')
+    close_button_box = [
+        [
+            sg.Text(f'Search Result: {search_query}', expand_x=True, font=HEADER_FONT, pad=((15, 0), (30, 0))),
+            sg.Text('', expand_x=True),
+            sg.Button('',
+                      image_filename='app/assets/images/closeNR.png',
+                      image_size=(35, 35),
+                      button_color=(sg.theme_background_color(),
+                                    sg.theme_background_color()),
+                      border_width=0,
+                      key='-CLOSE-',
+                      pad=((0, 15), (10, 0)))
+        ]
+    ]
+    return close_button_box
+
+def gen_crypto_header(currency_choice):
+    HEADER_FONT = ('Helvetica', 12, 'bold')
+    FONT_COLOR = '#a6a6a6'
+    crypto_header = [
+        [
+            sg.Text('#', font=HEADER_FONT, size=(4, 1), pad=((5, 0), (0, 0)), text_color=FONT_COLOR),
+            sg.Text('Name', font=HEADER_FONT, pad=((5, 0), (0, 0)), text_color=FONT_COLOR),
+            sg.Text('', expand_x=True, pad=((135, 0), (0, 0))),
+            sg.Text(f'Price ({currency_choice})', font=HEADER_FONT, pad=((0, 0), (0, 0)), text_color=FONT_COLOR),
+            sg.Text('', expand_x=True, pad=((0, 0), (0, 0))),
+            sg.Text('Market Cap', font=HEADER_FONT, pad=((12, 0), (0, 0)), size=(14,1), text_color=FONT_COLOR)
+        ],
+        [sg.HorizontalSeparator(pad=((0, 0), (10, 0)))]
+    ]
+    return crypto_header
+
+def render_search_window(search_terms, currency_choice, search_query):
+    if not search_terms:
+        return [
+            [sg.Column(
+                gen_search_header(search_query),
+                expand_x=True,
+                pad=((0, 0), (0, 100)),
+                background_color=''
+            )],
+            [
+                sg.Text('', expand_x=True),
+                sg.Column([
+                [
+                    sg.Image(filename='app/assets/images/no_result_found.png', key='-NORESULTIMG-', pad=((10, 10), (40, 0)))
+                ],
+                [
+                    sg.Text('', expand_x=True),
+                    sg.Text("It's Not Here...", font=('印品鸿蒙体', 20), pad=((0, 0), (30, 30)), text_color="#838383"),
+                    sg.Text('', expand_x=True)
+                ]
+                ], pad=((0, 0), (0, 0))),
+                sg.Text('', expand_x=True)
+            ],
+        ]
+    
+    close_button_box = [
+        sg.Column(
+        gen_search_header(search_query),
+        expand_x=True,
+        pad=(0, 0),
+        background_color=''
+        )
     ]
 
-    print(f'returninng key_to_data: ', key_to_data)
-    return sg.Window('Search Result', layout, size=(850, 650)), key_to_data
+    crypto_header = [
+        sg.Column(gen_crypto_header(currency_choice), pad=((10, 0), (40, 0)))
+    ]
+    
+    result_box = [
+        [sg.Column(gen_result_box(entry, i), pad=((0, 0), (0, 0)))]for i, entry in enumerate(search_terms[:6])
+    ]
+    result_container = [
+        sg.Column(result_box, pad=((10, 0), (0, 0)))
+    ]
+    
+    layout = [
+        [close_button_box],
+        [crypto_header],
+        [result_container]
+    ]
+    return layout
 
-def generate_results(result, user_search):
-    search_header = []
-    search_window = []
-    key_to_data = {}
+def search_window(api_key, api_choice, search_query, currency_choice, filepath):
+    search_terms = handle_search_query(api_key, api_choice, search_query, currency_choice, filepath)
 
-    if not isinstance(result, list):  # Handle no results case
-        # Show an image on a Canvas
-        search_header = [
-            [
-                sg.Button(
-                    '',
-                    image_filename='app/assets/images/searchSZ.png',
-                    image_size=(35, 35),
-                    button_color=(sg.theme_background_color(), sg.theme_background_color()),
-                    border_width=0,
-                    key='-SBUTTON-',
-                    pad=((0, 15), 0)
-                ),
-                sg.Text(
-                    f'No Results for: {user_search}', 
-                    font=('印品鸿蒙体', 16),
-                    text_color="#aaa8a8"
-                )
-            ]
-        ]
-        image_elem = sg.Image(filename='app/assets/images/no_result_found.png', key='-NORESULTIMG-', background_color="#dadada")
-        canvas_frame = sg.Column([[image_elem]], background_color="#dadada", pad=((185, 0), (125, 0)),)
-        canvas_message = sg.Text("It's Not Here...", font=('印品鸿蒙体', 20), background_color="#dadada", pad=((215, 0), (0, 0)), text_color="#838383")
-        search_window = [[canvas_frame], [canvas_message]]
-        return search_header, search_window, key_to_data
-    else:
-        search_header = [
-            [
-                sg.Button(
-                    '',
-                    image_filename='app/assets/images/searchSZ.png',
-                    image_size=(35, 35),
-                    button_color=(sg.theme_background_color(), sg.theme_background_color()),
-                    border_width=0,
-                    key='-SBUTTON-',
-                    pad=((0, 15), 0)
-                ),
-                sg.Text(
-                    f'Search: {user_search}', 
-                    font=('印品鸿蒙体', 16),
-                    text_color="#aaa8a8"
-                ),
-                sg.Button(
-                    '',
-                    image_filename='app/assets/images/closeNR.png',
-                    image_size=(35, 35),
-                    button_color=(sg.theme_background_color(), sg.theme_background_color()),
-                    border_width=0,
-                    key='-CBUTTON-',
-                    pad=((500, 0), (0, 50))
-                )
-            ]
-        ]
+    print('search_terms', search_terms)
+    search_win_layout = render_search_window(search_terms, currency_choice, search_query)
+    
+    return search_win_layout, search_terms
 
-
-
-    for index, item in enumerate(result):
-        
-        data_tuple = item
-
-        icon_key = f'-ICON{index+1}-'
-        name_key = f'-NAME{index+1}-'
-
-        key_to_data[icon_key] = data_tuple
-        key_to_data[name_key] = data_tuple
-
-        image = [
-            [
-                sg.Image(
-                    get_image(item[7]), 
-                    size=(65, 65), 
-                    background_color="#eaeaea", 
-                    key=f'-ICON{index+1}-', 
-                    enable_events=True
-                )
-            ]
-        ]
-
-        info = [
-             [
-                sg.Button(
-                    f'{item[1]}', 
-                    font=('League Spartan', 12, 'bold'), button_color="#eaeaea", 
-                    border_width=0, 
-                    key=f'-NAME{index+1}-',
-                    pad=(0, 0),
-                    enable_events=True,
-                    tooltip=f'{item[1]}'
-                ),
-                sg.Text(
-                    f'#{item[0]}', 
-                    font=('League Spartan', 12, 'bold'), background_color="#eaeaea", 
-                    text_color='#919191',
-                    pad=(0, 0)
-                ) 
-             ],
-             [
-                sg.Text(
-                    f'{item[8]}', font=('League Spartan', 12, 'bold'), background_color="#eaeaea", 
-                    pad=((2, 1), 0),
-                    text_color='#919191')
-             ]
-        ]
-
-        nums = [
-            [
-                sg.Text(
-                    'MCap: ', 
-                    font=('League Spartan', 12, 'bold'), background_color="#eaeaea",
-                    pad=(0, 0)
-                ),
-                sg.Text(
-                    f'{format_large_number(item[6])}', 
-                    font=('League Spartan', 12, 'bold'), text_color="#919191",
-                    background_color="#eaeaea",
-                    pad=(0, 0)
-                )
-            ],
-            [
-                sg.Text(
-                    'Vol(24h): ', 
-                    font=('League Spartan', 12, 'bold'), background_color="#eaeaea",
-                    pad=(0, 0)
-                ),
-                sg.Text(
-                    f'${format_large_number(item[4])}', 
-                    font=('League Spartan', 12, 'bold'), text_color="#919191",
-                    background_color="#eaeaea",
-                    pad=(0, 0)
-                )
-            ]
-        ]
-
-        price = [
-            [
-                sg.Text(
-                    f'${item[2]}', 
-                    font=('League Spartan', 12, 'bold'), background_color="#eaeaea"
-                )
-            ]
-        ]
-
-        card = [
-            sg.Column(
-                image, 
-                size=(80, 80), 
-                background_color="#eaeaea"
-            ),
-            sg.Column(
-                info, 
-                size=(150, 60), 
-                background_color="#eaeaea",
-                pad=(0, (0, 10)),
-                expand_x=True
-            ),
-            sg.Column(
-                nums, 
-                size=(180, 60), 
-                background_color="#eaeaea",
-                pad=((20, 0), (0, 3))
-            ),
-            sg.Column(
-                price, 
-                size=(120, 60), 
-                background_color="#eaeaea"
-            )
-        ]
-
-        search_window.append([sg.Column(
-                [card], 
-                size=(600, 85), 
-                background_color="#eaeaea", 
-                pad=((20, 0), (10, 7))
-            )
-        ])
-
-    return search_header, search_window, key_to_data

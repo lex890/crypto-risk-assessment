@@ -7,7 +7,6 @@ import traceback
 from github import Github
 
 def generate_feedback_screen():
-    sg.theme('GrayGrayGray')
     layout = [
 
         [sg.HorizontalSeparator()],

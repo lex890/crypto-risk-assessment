@@ -4,19 +4,35 @@ import pandas as pd
 from decimal import Decimal
 from forex_python.converter import CurrencyRates
 from . import feedback as fdb
+from .feedback import send_automated_report
 
-def read_csv(filepath):
-    # reinitialize (headings, data) if update happens in the csv
-    with open(filepath, newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        data = list(reader)
+def read_csv(filepath="app/assets/data/temp.csv"):
+    try:
+        # Prevent directory traversal
+        if '..' in filepath or filepath.startswith(('/', '\\')):
+            raise ValueError("Invalid filepath.")
 
-    if not data:
+        # Ensure the file exists and is a CSV
+        if not os.path.isfile(filepath):
+            raise FileNotFoundError(f"File not found: {filepath}")
+        if not filepath.lower().endswith('.csv'):
+            raise ValueError("Unsupported file type. Only CSV files are allowed.")
+
+        # Read file safely
+        with open(filepath, newline="", encoding="utf-8") as csvfile:
+            reader = csv.reader(csvfile)
+            rows = list(reader)
+
+        if not rows:
+            return [], []
+        print('read successfully')
+        return rows[0], rows[1:]  # headings, data
+
+    except Exception as e:
+        send_automated_report()  #Log the error report
         return [], []
-    headings = data[0]
-    data = data[1:]
-    return headings, data
 
+# store to a temp csv file
 def export_to_csv(list_of_dict, filepath='app/assets/data/temp.csv'):
     if not list_of_dict:
         print("No data to export.")
@@ -29,6 +45,7 @@ def export_to_csv(list_of_dict, filepath='app/assets/data/temp.csv'):
             writer.writeheader()
             writer.writerows(list_of_dict)
         print(f"✅ Data exported to {filepath}")
+        
     if isinstance(list_of_dict, list) and all(isinstance(item, tuple) for item in list_of_dict):
         with open(filepath, mode='w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
@@ -43,7 +60,11 @@ def append_csv(filepath, new_data):
         writer = csv.writer(file)
         for row in new_data:
             writer.writerow(row)
-    os.remove('app/assets/data/temp.csv') 
+    try:
+        os.remove('app/assets/data/temp.csv')
+    except FileNotFoundError:
+        pass  # Ignore if temp.csv doesn't exist
+
     print(f"✅ New data appended to {filepath}")
 
 def convert_to_dict(data, currency_choice):
@@ -55,7 +76,7 @@ def convert_to_dict(data, currency_choice):
         ) = row
     
     result.append({
-        '#': ranking,
+        '#': int(ranking),
         'Name': name,
         f'Current Price': price,
         '1h%': volume_1h,
@@ -71,7 +92,6 @@ def convert_to_dict(data, currency_choice):
     })
     print(result)
     return result
-
 
 def currency_conversion(current_csv, currency_choice, new_currency_choice):
     if currency_choice == new_currency_choice:
