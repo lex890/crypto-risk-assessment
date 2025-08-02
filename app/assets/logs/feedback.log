@@ -663,3 +663,116 @@ Type      : General Feedback
 ---
 Please provide detailed information about your feedback, issue, or suggestion...
 
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 479, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 574, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 785, in evaluate_cryptos
+    score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 649, in score_exchange_listings
+    response = make_coingecko_request(url)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 115, in make_coingecko_request
+    raise Exception(f"Failed to fetch {url} after {retries} attempts")
+Exception: Failed to fetch https://api.coingecko.com/api/v3/coins/hedera-hashgraph/tickers after 3 attempts
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 436, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 484, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-07-31 12:41:47
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 479, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 574, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 785, in evaluate_cryptos
+    score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 649, in score_exchange_listings
+    response = make_coingecko_request(url)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 115, in make_coingecko_request
+    raise Exception(f"Failed to fetch {url} after {retries} attempts")
+Exception: Failed to fetch https://api.coingecko.com/api/v3/coins/hedera-hashgraph/tickers after 3 attempts
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 436, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 484, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+

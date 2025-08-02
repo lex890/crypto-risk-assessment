@@ -1,19 +1,9 @@
 import app
 
-api_key = 'CG-Y1CthFUh3uNauQ8ehg6TzFCu'
-api_choice = 2
-search_query = 'OHM'
-filepath = 'app/assets/data/data.csv'
-currency_choice = 'USD'
-search_window = app.search_window(api_key, api_choice, search_query, currency_choice, filepath)
-root1 = search_window.TKroot
-SEARCH_PREFIXES = ('-srank', '-sicon', '-sname', '-ssymbol',
-                '-sprice', '-smcap')
-app.hovery(search_window, SEARCH_PREFIXES, root1)
-while True:
-    sw_event, sw_values = search_window.read()
-
-    if sw_event == '-CLOSE-':
-        search_window.close()
-        break
-
+api_key = "e28cbf9a-5c08-452e-8099-fa7f832262a3"
+api_choice = "CoinMarketCap"
+currency_choice="USD"
+current_page = 1
+rows_per_page = 10
+login_window = app.generate_login_window(api_choice)
+app.demo_mode_handler(login_window, current_page, rows_per_page)

@@ -5,6 +5,7 @@ import math
 
 figure_canvas_agg_dict = {}
 score_data_for_canvas = {}
+pie_charts = []
 
 def render_figure(canvas_elem, figure, key):
     canvas = canvas_elem.TKCanvas
@@ -48,34 +49,41 @@ def draw_figure(canvas_elem, figure, key, data_for_chart, window, is_main_score=
     bind_chart_click(widget, key, window)
     update_chart_state(figure, key, data_for_chart, is_main_score)
 
-def get_score_category(value):
-    
-    print('values:', value)
-    if value > 10:
-        value = (math.ceil(value / 10) * 10) // 10
-    print('new values:', value)
-    match value:
+def get_score_category(value, scale=100):
+    print('Raw score:', value)
+
+    # Clamp score to valid range
+    if scale == 100:
+        value = max(0, min(value, 100))
+        norm = value // 10
+    elif scale == 10:
+        value = max(0, min(value, 10))
+        norm = value  # No division needed
+
+    print(f'Normalized (scale={scale}):', norm)
+
+    match norm:
         case 10:
             category = "Low Risk"
             color = "#07DB07"
         case 9:
             category = "Low Risk"
-            color = "#39D70B"
+            color = '#39D70B'
         case 8:
             category = "Low Risk"
-            color = "#76D210"
+            color = '#76D210'            
         case 7:
-            category = "Low-Med Risk"
+            category = "Low-Medium Risk"
             color = "#AECD15"
         case 6:
-            category = "Low-Med Risk"
+            category = "Low-Medium Risk"
             color = "#FFC61B"
         case 5:
-            category = "High-Med Risk"
+            category = "Medium-High Risk"
             color = "#F7A516"
         case 4:
-            category = "High-Med Risk"
-            color = "#EE8311"
+            category = "Medium-High Risk"
+            color = "#F77A16"
         case 3:
             category = "High Risk"
             color = "#E45D0C"
@@ -83,46 +91,39 @@ def get_score_category(value):
             category = "High Risk"
             color = "#DB3807"
         case 1:
-            category = "High Risk" 
+            category = "High Risk"
             color = "#da3200"
         case 0:
             category = "No Rating"
             color = "#DDDDDD"
+        case _:
+            category = "Unknown"
+            color = "#000000"
+
     return category, color
 
 # Create the pie chart figure
-def create_pie_chart(score_data, figsize=(1.75, 1.75)):
+def create_pie_chart(score_data, figsize=(3, 3)):
     get_score = int(score_data)
-    
-    if (figsize == (3, 3)): # Used for the main score
-        value = min(get_score, 100) 
-        fontsize_category = 12
-        fontsize_score = 32
-        category, color = get_score_category(value)
-        remainder = 100 - value
-        centre_color = '#ffffff'
-        graph_bg = '#ffffff'
-    else: # Used for individual scores and the score info window
-        value = get_score
-        fontsize_category = 8
-        fontsize_score = 16
-        category, color = get_score_category(value)
-        remainder = 10 - value
-        centre_color = '#ffffff'
-        graph_bg = '#ffffff'
-    
-    sizes = [value, remainder]
-    fig, ax = plt.subplots(figsize=figsize, facecolor=graph_bg)
+    print('get_score', get_score)
+    value = min(get_score, 100)
+    fontsize_category = 13
+    fontsize_score = 40
+    category, _ = get_score_category(value, scale=100)
+    remainder = 100 - value
+
+    sizes = [20,20,20,20,20,remainder]
+    fig, ax = plt.subplots(figsize=figsize, facecolor='#ffffff')
     ax.pie(sizes,
            startangle=90,
-           colors=[color, "#EEEEEE"])
-    centre_circle = plt.Circle((0, 0), 0.80, fc=centre_color)
+           colors=['#ef476f', '#ffd166', '#06d6a0', '#118ab2', '#2e4e5a', "#f5f5f5"])
+    centre_circle = plt.Circle((0, 0), 0.85, fc='#ffffff')
     ax.add_artist(centre_circle)
     # score in digit
-    ax.text(0, 0.1, f'{value}', ha='center', va='center', fontsize=fontsize_score, weight='bold')
-
+    ax.text(0, 0.1, f'{value}', ha='center', va='center', fontsize=fontsize_score,  fontfamily='Verdana')
     # score category
-    ax.text(0, -0.30, category, ha='center', va='center', fontsize=fontsize_category)
+    ax.text(0, -0.30, category, ha='center', va='center', fontsize=fontsize_category, fontfamily='monospace')
+    ax.text(0, -0.50, 'See Details', ha='center', va='center', fontsize=8, fontfamily='monospace', color="#7C7C7C", fontweight='bold')
     ax.axis('equal')
     fig.tight_layout()
     return fig

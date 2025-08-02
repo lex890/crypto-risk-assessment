@@ -6,10 +6,8 @@ from PIL import Image, ImageSequence
 import io
 
 def show_dimmed_overlay():
-    screen_width, screen_height = sg.Window.get_screen_size()
-    print(screen_width, 'x', screen_height)
     layout = [[sg.Text('', size=(1, 1))]]
-    return sg.Window(
+    window = sg.Window(
         '',
         layout,
         no_titlebar=True,
@@ -19,12 +17,13 @@ def show_dimmed_overlay():
         transparent_color=None,
         element_padding=(0, 0),
         margins=(0, 0),
-        location=(0, 0),  # Always top-left because the window size is supposed to be the entire screen
-        size=(screen_width, screen_height),
+        location=(0, 0),
         resizable=False,
         modal=True,
         finalize=True
     )
+    window.maximize()
+    return window
 
 # Loading screen window
 def show_loading_window(location=None):

@@ -4,15 +4,9 @@ from . import keystore as key
 from . import csv_handler as csv
 from . import main_screen as msc
 from . import loading as ldg
+from . import prefix as pre
 import webbrowser
-
-# Define UI element keys that will respond to hover effects
-KEY_PREFIXES = ('-rank', '-icon', '-name', '-symbol',
-                    '-price', '-hour', '-day', '-week', '-mcap',
-                    '-KEYSTORE-', '-CRYPTO-NAME-TOGGLE-', '-DEMOMODE-',
-                    '-CRYPTO-LOGO-TOGGLE-', '-CRYPTO-LINKER-', 
-                    '-SAVEKEY-', 'Clear', 'Confirm')
-
+sg.theme('LightGrey1')
 flag_image = {
     True: 'app/assets/images/arrow-up-small.png',
     False: 'app/assets/images/arrow-down-small.png'
@@ -38,11 +32,9 @@ def handle_crypto_toggle(login_window):
 
     # Update the crypto logo image
     login_window['-CRYPTO-LOGO-TOGGLE-'].update(filename=new_image)
-
     # Update the toggle button with new name and color
     login_window['-CRYPTO-NAME-TOGGLE-'].update(value=new_name, text_color=new_color)
     api_choice = login_window['-CRYPTO-NAME-TOGGLE-'].get()
-
     # Clear any change message
     login_window['-CHANGE-MSG-'].update(value='')
     return api_choice
@@ -118,7 +110,7 @@ def handle_confirm(login_window, lw_values):
 
 def setup_hover_effects(window):
     root = window.TKroot
-    hovery(window, KEY_PREFIXES, root)
+    hovery(window, pre.KEY_PREFIXES, root)
 
 def hovery(main_window, key_prefixes: tuple, root):
     """Bind <Enter>/<Leave> so the mouse becomes a hand on hover"""
@@ -156,7 +148,7 @@ def demo_mode_handler(login_window, current_page, rows_per_page):
     headings, data = csv.read_csv(filepath)
 
     # Create the main screen with demo data
-    main_window = msc.main_window(headings, data, current_page, rows_per_page)
+    main_window = msc.main_window(data)
 
     # Handle events on the main screen; if user exits, show login window again
     if msc.main_window_handler(main_window, headings, data, current_page, rows_per_page, filepath, api_key, api_choice):
@@ -174,7 +166,7 @@ def handle_confirm_event(login_window, lw_values, current_page, rows_per_page):
             return False
         # Unpack the tuple
         headings, data, filepath = result
-        main_window = msc.main_window(headings, data, current_page, rows_per_page)
+        main_window = msc.main_window(data)
         if msc.main_window_handler(main_window, headings, data, current_page, rows_per_page, filepath, api_key, api_choice):
             login_window.un_hide()
         return True
@@ -248,7 +240,7 @@ def generate_login_window(api_choice):
         # logo and main heading
         [
             sg.Image(filename='app/assets/images/resizedLogo.png', size=(50, 50), pad=((30, 10), 0)),
-            sg.Text('Cryptocurrency Investment Fraud Assessment Tool', font=('Gotham', 20), pad=(0, 30))
+            sg.Text('Blockchain Risk Assessment Tool', font=('Gotham', 20), pad=(0, 30))
         ],
         [sg.VPush()],
         [
@@ -286,7 +278,7 @@ def generate_login_window(api_choice):
 
     ]
 
-    return sg.Window('Cryptocurrency Investment Fraud Assessment Tool', layout, size=(800, 450), finalize=True)
+    return sg.Window('Blockchain Risk Assessment Tool', layout, size=(800, 450), finalize=True)
 
 def run_app():
     current_page = 1

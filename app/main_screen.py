@@ -2,13 +2,16 @@ import FreeSimpleGUI as sg
 import webbrowser
 from . import risk_assessment as rsk
 from . import plot_graphs as plg
-from . import get_images as gim
 from . import login_screen as log
 from . import loading as lod
 from . import csv_handler as csv
 from . import feedback as fdb
+from . import table as tbl
+from . import prefix as pre
 import os
 import re
+import threading
+from . import request_api as req
 screen_width, _ = sg.Window.get_screen_size()
 
 def get_page_data(data, page, rows_per_page):
@@ -16,154 +19,16 @@ def get_page_data(data, page, rows_per_page):
     end = start + rows_per_page
     return data[start:end]
 
-def get_percent_data(value):
-    value = float(value)
-    
-    if value < 0:
-        number_data=f'{abs(value)}%'
-        number_color='red'
-    else:
-        number_data=f'{abs(value)}%'
-        number_color='green'
-
-    return number_data, number_color
-
-def generate_table(i, data):
-    font_size = ('Helvetica', 12)
-    symbol_font_size = ('Helvetica', 12, 'bold')
-    current_data = data[i]
-
-    # Descriptive variable unpacking
-    rank, name, price, change_1h, change_24h, change_7d, mcap, icon_path, symbol = current_data[:9]
-
-    # Create a list of frequency price change
-    percent_fields = [change_1h, change_24h, change_7d]
-
-    # Filter the retrieved data and color
-    (num1, col1), (num2, col2), (num3, col3) = (
-        get_percent_data(v) for v in percent_fields
-    )
-
-    row = [
-            [
-                sg.Text( # Rank
-                    rank, 
-                    key=f'-rank{i}-', font=font_size, size=(4, 1), 
-                    justification='right', enable_events=True, 
-                    pad=((0, 30), (0, 0))
-                ),
-                sg.Image( # Icon
-                    gim.get_image(icon_path, 1), key=f'-icon{i}-',
-                    pad=((0, 0), (0, 0)), enable_events=True
-                ),
-                sg.Column([
-                    [
-                        sg.Text( # Name
-                            name, key=f'-name{i}-', font=font_size, 
-                            pad=((10, 0), (0, 0)), enable_events=True
-                        ),
-                        sg.Text( # Symbol
-                            symbol, key=f'-symbol{i}-', font=symbol_font_size, 
-                            size=(6, 1), text_color='#bebebe', pad=((0, 0), (0, 0)), enable_events=True
-                        )
-                    ]
-                    ], pad=((0, 0), (0, 0)), size=(160, 25)
-                ),
-                sg.Text( # Price
-                    price, key=f'-price{i}-', font=font_size, 
-                    size=(16, 1), justification='right', pad=((0, 20), (0, 0)), enable_events=True
-                ),
-                sg.Text( # 1h%
-                    num1, text_color=col1, key=f'-hour{i}-', font=font_size, 
-                    size=(6, 1), justification='right', pad=((0, 5), (0, 0)), enable_events=True
-                ),
-                sg.Text( # 24h%
-                    num2, text_color=col2, key=f'-day{i}-', font=font_size, 
-                    size=(6, 1), justification='right', pad=((0, 5), (0, 0)), enable_events=True
-                ),
-                sg.Text( # 7d%
-                    num3, text_color=col3, key=f'-week{i}-', font=font_size, 
-                    size=(6, 1), justification='right', pad=((0, 0), (0, 0)), enable_events=True
-                ),
-                sg.Text( # Market Cap
-                    mcap, key=f'-mcap{i}-', font=font_size, 
-                    size=(17, 1), justification='right', pad=((20, 20), (0, 0)), enable_events=True
-                )
-            ]
-        ]
-    return row
-
-def generate_table_header():
-    font_size = ('Helvetica', 12, 'bold')
-    row = [
-        [
-            sg.Text( # Rank
-                '#', font=font_size, pad=((0, 0), (0, 0)), 
-                size=(4, 1), justification='right'
-            ),
-            sg.Text( # Name
-                'Name', font=font_size, pad=((25, 0), (0, 0))
-            ),
-            sg.Text( # Price
-                'Price', font=font_size, pad=((125, 12), (0, 0)),
-                size=(16, 1), justification='right'
-            ),
-            sg.Text(# 1h%
-                '1h%', font=font_size, pad=((5, 0), (0, 0)),
-                size=(6, 1), justification='right'
-            ),
-            sg.Text(# 24h%
-                '24%', font=font_size, pad=((0, 0), (0, 0)),
-                size=(6, 1), justification='right'
-            ),
-            sg.Text(# 7d%
-                '7d%', font=font_size, pad=((0, 0), (0, 0)),
-                size=(6, 1), justification='right'
-            ),
-            sg.Text(# Market Cap
-                'Market Cap', font=font_size, pad=((0, 20), (0, 0)),
-                size=(17, 1), justification='right', expand_x=True
-            )
-        ]
-    ] 
-    return row 
-
 def calculate_current_entry(current_page, rows_per_page, data):
     start = (current_page - 1) * rows_per_page
     end = start + rows_per_page
     current_page_data = data[start:end]
-    print('current_page_data', current_page_data)
     return current_page_data
-
-def update_table(main_window, current_page_data, rows_per_page):
-    for i, row in enumerate(current_page_data):
-        # unpack row
-        (rank, name, price, change_1h, change_24h, change_7d, mcap, icon_path, symbol) = row[:9]
-        # format the % fields
-        (num1, col1), (num2, col2), (num3, col3) = (
-            get_percent_data(v) for v in (change_1h, change_24h, change_7d)
-        )
-        # update table
-        main_window[f'-rank{i}-'  ].update(rank)
-        main_window[f'-icon{i}-'  ].update(data=gim.get_image(icon_path, 1))
-        main_window[f'-name{i}-'  ].update(name)
-        main_window[f'-symbol{i}-'].update(symbol)
-        main_window[f'-price{i}-' ].update(price)
-        main_window[f'-hour{i}-'  ].update(num1, text_color=col1)
-        main_window[f'-day{i}-'   ].update(num2, text_color=col2)
-        main_window[f'-week{i}-'  ].update(num3, text_color=col3)
-        main_window[f'-mcap{i}-'  ].update(mcap)
-
-    # Extract the row number
-    for leftover in range(len(current_page_data), rows_per_page):
-        for prefix in ('-rank', '-icon', '-name', '-symbol',
-                       '-price', '-hour', '-day', '-week', '-mcap'):
-            key = f'{prefix}{leftover}-'
-            element = main_window[key]
-            element.update(visible=True)
 
 def first_column_box():
     # Define header row
+    smol_font = ('Segoe UI', 12, 'bold')
+    bigga_font = ('Segoe UI', 24, 'bold')
     header = [
         [
             sg.Image(
@@ -174,8 +39,8 @@ def first_column_box():
                 key='-HEADERICON-'
             ),
             sg.Text(
-                'Cryptocurrency Investment Risk Assessment Tool',
-                font=('Helvetica', 16),
+                'Blockchain Risk Assessment Tool',
+                font=bigga_font,
                 pad=((0, 0), (20, 0)),
                 enable_events=True,
                 key='-HEADER-',
@@ -197,7 +62,7 @@ def first_column_box():
             ),
             sg.Text(
                 'Give us feedback!',
-                font=('Helvetica', 12),
+                font=smol_font,
                 pad=((0, 40), (20, 0)),
                 enable_events=True,
                 key='-FEEDBACK-',
@@ -252,8 +117,8 @@ def second_column_box():
 
     combo_currency = [
         [
-            sg.Text('Select Currency', font=('Helvetica', 16), pad=((50, 0), (0, 0))),
-            sg.Combo(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'PHP'], default_value='USD', font=('Helvetica', 14), key='-CURRENCY-', pad=((0, 0), (0, 0)), tooltip='Select Currency', enable_events=True),
+            sg.Text('Select Currency: ', font=('Segoe UI', 16), pad=((50, 0), (0, 0))),
+            sg.Combo(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'PHP'], default_value='USD', font=('Segoe UI', 12), key='-CURRENCY-', pad=((0, 0), (0, 0)), tooltip='Select Currency', enable_events=True),
         ]
     ]
 
@@ -379,9 +244,7 @@ def second_column_box():
 
             sg.Column(combo_currency, pad=(0, 0)),   
 
-            sg.Column(search_bar, pad=(0, 0)),
-
-            sg.Column(icon_reference, pad=(0, 0))
+            sg.Column(search_bar, pad=(0, 0))
         ]
     ]
 
@@ -391,7 +254,7 @@ def third_column_box(data):
     
     page_nav = [
         [
-            
+
             sg.Button(
                 image_filename='app/assets/images/arrow-left-icon.png',
                 size=(75, 75),
@@ -415,41 +278,73 @@ def third_column_box(data):
                 border_width=0,
                 focus=False,
                 pad=((30, 0), 0)
-            )
+            ),
+            
+        ]
+    ]
+    timer_container = [
+        [
+            sg.Image(filename='app/assets/images/timer.png', pad=((0, 10), (0, 0)), key='-TIMER-ICON-'),
+            sg.Text('Refreshing in: 60', pad=((0, 0), (0, 0)), font=('Hevetica', 12, 'bold'), key='-TIMER-', enable_events=True)
         ]
     ]
 
     crypto_header = [
         [
             sg.Column(
-                generate_table_header(),
+                tbl.generate_table_header(),
                 pad=((0, 0), (10, 10))
             )
         ]
     ]
-    print('data', data)
     crypto_list = [
         [sg.Column([
-            [sg.Column(generate_table(i, data), pad=((0, 0), (0, 0)))],
+            [sg.Column(tbl.generate_table(i, data), pad=((0, 0), (0, 0)))],
             [sg.HorizontalSeparator(pad=((0, 0), (15, 15)), color='#f0f0f0')]
         ], pad=((0, 0), (0, 0)))]
         for i in range(10)
     ]
 
     sort_by_message = [
-        [sg.Column([
-            [sg.Text('Sort by: Rank', pad=((0, 0), (0, 0)), font=('Hevetica', 12, 'bold'), key='-SORT-BY-MSG-', enable_events=True),
-             sg.Image(filename='app/assets/images/arrow-up-small.png', pad=((5, 0), (0, 0)), key='-FLAG-')]
-        ], pad=((0, 0), (0, 0)))]
+        [
+            sg.Column([
+                [
+                    sg.Text('Sort by: Rank', pad=((0, 0), (0, 0)), font=('Hevetica', 12, 'bold'), key='-SORT-BY-MSG-', enable_events=True),
+                    sg.Image(filename='app/assets/images/arrow-up-small.png', pad=((5, 0), (0, 0)), key='-FLAG-')
+                ]
+            ], pad=((0, 0), (0, 0))),
+            sg.Push(),
+            sg.Column([
+                [
+                    sg.Text('', size=(2, 1), background_color='#06be8d', border_width=0, relief='solid', pad=((0, 5), 0)),
+                    sg.Text('Low Risk', pad=((0, 2), (0, 0)), font=('Hevetica', 10, 'bold'), text_color="#808080"),
+                    sg.VerticalSeparator(),
+                    sg.Text('', size=(2, 1), background_color='#ffd166', border_width=0, relief='solid', pad=((2, 5), 0)),
+                    sg.Text('Low-Medium Risk', pad=((0, 2), (0, 0)), font=('Hevetica', 10, 'bold'), text_color='#808080'),
+                    sg.VerticalSeparator(),
+                    sg.Text('', size=(2, 1), background_color="#e26641", border_width=0, relief='solid', pad=((2, 5), 0)),
+                    sg.Text('Medium-High Risk', pad=((0, 2), (0, 0)), font=('Hevetica', 10, 'bold'), text_color='#808080'),
+                    sg.VerticalSeparator(),
+                    sg.Text('', size=(2, 1), background_color="#ef476f", border_width=0, relief='solid', pad=((2, 5), 0)),
+                    sg.Text('High Risk', pad=((0, 0), (0, 0)), font=('Hevetica', 10, 'bold'), text_color='#808080'),
+                    
+                ]
+            ], pad=((0, 0), (0, 0)))
+        ]
     ]
 
     table = [
-        [sg.Column(sort_by_message, pad=((0, 0), (35, 5)))],
+        [sg.Column(sort_by_message, pad=((0, 0), (35, 5)), expand_x=True)],
         [sg.HorizontalSeparator(pad=((0, 0), (5, 0)))],
         [sg.Column(crypto_header, pad=((0, 0), (0, 0)))],
         [sg.HorizontalSeparator(pad=((0, 0), (0, 15)))],
         [sg.Column(crypto_list, pad=((0, 0), (0, 0)))],
-        [sg.Push(), sg.Column(page_nav, pad=((20, 0), (25, 0))), sg.Push()]
+        [
+            sg.Push(), 
+            sg.Column(page_nav, pad=((0, 0), (0, 0))), 
+            sg.Push()
+        ],
+        [sg.Column(timer_container, pad=((0, 0), (0, 20))),sg.Push()]
     ]
 
     risk_assessment_window = rsk.score_window(data)
@@ -457,15 +352,15 @@ def third_column_box(data):
     third_layer = [
         [
             sg.Push(),
-            sg.Column(table, pad=((0, 0), (0, 0))),
-            sg.Column(risk_assessment_window, pad=((48, 0), (0, 0))),
+            sg.Column(table, pad=((20, 0), (0, 0))),
+            sg.Column(risk_assessment_window, pad=((15, 0), (0, 0))),
             sg.Push()
         ]
     ]
 
     return third_layer
 
-def main_window(headings, data, current_page, rows_per_page):
+def main_window(data):
 
     first_layer = first_column_box()
 
@@ -498,24 +393,49 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
     # Initializing default values
     reverse_flag = True
     hyper_link = data[0][11]
-    assessment_criteria = headings[13:23]
-    currency_choice = main_window['-CURRENCY-'].get()
-    # Set strings from crypto data headers as score headers
-    marquee_texts = [f'   {item}   ' for item in assessment_criteria]
     
     # Set the table elements hover effect
     log.setup_hover_effects(main_window)
     
+    # Create stop event for timer thread
+    stop_event = threading.Event()
+    
+    # Start timer thread for countdown display
+    timer_thread = req.start_timer_thread(main_window, stop_event)
+    
+    # Start price monitoring thread (using first coin as reference)
+    coin_id = data[0][0] if data and len(data) > 0 else '1'  # Use first coin's ID or default to '1'
+    currency_choice = main_window['-CURRENCY-'].get()
+    threading.Thread(target=req.start_price_monitoring, args=(api_key, api_choice, currency_choice, coin_id, filepath), daemon=True).start()
+    selected_coin = data[0]
     # Main window event loop 
     while True:
-        mw_event, mw_values = main_window.read(timeout=90)
+        mw_event, mw_values = main_window.read(timeout=120)
+        currency_choice = main_window['-CURRENCY-'].get()
         
         # Individual Score Window
-        if mw_event == '-SCORE-CLICKED-':
-            chart_key = mw_values[mw_event]['key']
-            chart_data = plg.score_data_for_canvas[chart_key]['data']
+        if isinstance(mw_event, str) and mw_event in pre.ASSESSMENT_PREFIXES:
+            # get score from text element 
+            if mw_event in pre.KEY_ACCESS:
+                assessment_key = pre.KEY_ACCESS[mw_event]
+                assessment_value = main_window[assessment_key].DisplayText
+            # get score from csv 
+            elif mw_event in pre.BINARY_ACCESS:
+                assessment_key = pre.BINARY_ACCESS[mw_event]
+                if assessment_key   == '-DEVELOPER-':
+                    assessment_value = selected_coin[17]
+                elif assessment_key == '-COMMUNITY-':
+                    assessment_value = selected_coin[18]
+                elif assessment_key == '-WHITEPAPER-':
+                    assessment_value = selected_coin[19]
+                elif assessment_key == '-REGULATORY-':
+                    assessment_value = selected_coin[20]
+                elif assessment_key == '-CONTRACT-':
+                    assessment_value = selected_coin[21]
+            
             overlay_win = lod.show_dimmed_overlay()
-            sub_score_window = rsk.sub_score_window(chart_data, chart_key)
+            # generate Individual Score Window (subs_score_window)
+            sub_score_window = rsk.sub_score_window(assessment_key, assessment_value)
             while True:
                 event, _ = sub_score_window.read()
                 if event == '-EXIT-':
@@ -527,24 +447,26 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
         elif mw_event == '-MAIN-CLICKED-':
             chart_key = mw_values[mw_event]['key']
             chart_data = plg.score_data_for_canvas[chart_key]['data']
-            overlay_win = lod.show_dimmed_overlay()
+            main_window.hide()
+            # generate OAS window
             main_score_window = rsk.main_score_window(chart_data)
             while True:
                 event, _ = main_score_window.read()
                 if event == '-EXIT-':
-                    overlay_win.close()
                     main_score_window.close()
                     break
-        
+            main_window.UnHide()
+            main_window.Maximize()
         # Logo click to exit
         elif mw_event in ('-HEADERICON-', 'HEADER'):
+            # Stop the timer thread before closing
+            stop_event.set()
             if filepath != 'app/assets/data/data.csv':
                 os.remove(filepath)
             main_window.close()
             return True
-        
         # Handles table clicks
-        elif isinstance(mw_event, str) and mw_event.startswith(log.KEY_PREFIXES):
+        elif isinstance(mw_event, str) and mw_event.startswith(pre.TABLE_PREFIXES):
             match = re.search(r'\d+', mw_event)
             current_row = (int(match.group())) + ((current_page - 1) * rows_per_page)
             selected_coin = data[current_row]
@@ -560,7 +482,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             if current_page < max_pages and not len(data) % rows_per_page:
                 current_page += 1
                 current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-                update_table(main_window, current_page_data, rows_per_page)
+                tbl.update_table(main_window, current_page_data, rows_per_page)
                 main_window['-PAGENO-'].update(str(current_page))
             # next to load more data from API
             else: 
@@ -579,7 +501,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                         _, data = csv.read_csv(filepath)
                         # update page number and table
                         current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-                        update_table(main_window, current_page_data, rows_per_page)
+                        tbl.update_table(main_window, current_page_data, rows_per_page)
                         main_window['-PAGENO-'].update(str(current_page))
                     else:
                         sg.popup_auto_close('No more cryptocurrencies available.', auto_close_duration=2)
@@ -590,7 +512,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             if current_page > 1:
                 current_page -= 1
                 current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-                update_table(main_window, current_page_data, rows_per_page)
+                tbl.update_table(main_window, current_page_data, rows_per_page)
                 main_window['-PAGENO-'].update(str(current_page))
 
         elif mw_event == '-CURRENCY-':
@@ -599,7 +521,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             _, data, filepath = lod.login_loading(api_key, api_choice, currency)
             current_page = 1
             current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-            update_table(main_window, current_page_data, rows_per_page)
+            tbl.update_table(main_window, current_page_data, rows_per_page)
             main_window['-PAGENO-'].update(str(current_page))        
             overlay_win.close()
              
@@ -616,7 +538,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             reverse_flag = not reverse_flag
             current_page = 1
             current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-            update_table(main_window, current_page_data, rows_per_page)
+            tbl.update_table(main_window, current_page_data, rows_per_page)
             main_window['-PAGENO-'].update(str(current_page))
             main_window['-SORT-BY-MSG-'].update('Sort by: Rank')
             
@@ -626,7 +548,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             reverse_flag = not reverse_flag
             current_page = 1
             current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-            update_table(main_window, current_page_data, rows_per_page)
+            tbl.update_table(main_window, current_page_data, rows_per_page)
             main_window['-PAGENO-'].update(str(current_page))
             main_window['-SORT-BY-MSG-'].update('Sort by: Alpha')
             
@@ -636,7 +558,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             reverse_flag = not reverse_flag
             current_page = 1
             current_page_data = calculate_current_entry(current_page, rows_per_page, data)
-            update_table(main_window, current_page_data, rows_per_page)
+            tbl.update_table(main_window, current_page_data, rows_per_page)
             main_window['-PAGENO-'].update(str(current_page))
             main_window['-SORT-BY-MSG-'].update('Sort by: Price')
             
@@ -657,7 +579,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                     if sw_event == '-CLOSE-':
                         search_window.close()
                         break
-                    elif isinstance(sw_event, str) and sw_event.startswith(log.KEY_PREFIXES):
+                    elif isinstance(sw_event, str) and sw_event.startswith(pre.KEY_PREFIXES):
                         match = re.search(r'\d+', sw_event)
                         current_index = str((int(match.group())))
                         current_row = next(
@@ -680,9 +602,9 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                     overlay_win.close()
 
         elif mw_event in (sg.WIN_CLOSED, 'Exit'):
+            # Stop the timer thread before closing
+            stop_event.set()
             if filepath != 'app/assets/data/data.csv':
                 os.remove(filepath)
             main_window.close()
             return True
-        
-        rsk.marquee_effect(main_window, marquee_texts)
