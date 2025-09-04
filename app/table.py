@@ -141,6 +141,34 @@ def generate_table_header():
     ] 
     return row 
 
+def toggle_table(query, oas_window, data):
+    if query == 'Market Volume Trend':
+        list = get_vol_list(data)
+        title = 'Top 5 coins based on Market Volume Trend'
+        color = "#ef476f"
+    elif query == 'Overall Assessment Score':
+        list = get_oas_list(data)
+        title = 'Top 5 coins based on Overall Assessment Score'
+        color = '#118ab2'
+    oas_window['-header-'].update(title, text_color=color)
+    for i, row in enumerate(list):
+            # Descriptive variable unpacking
+            
+        _, name, price, _, change_24h, _, mcap, icon_path, symbol, oas = row[:9] + [row[-1]]
+
+        # Filter the retrieved data and color
+        num2, col2 = get_percent_data(change_24h)
+        oas_color = get_assessment_color(oas)
+
+        oas_window[f'-icon{i}-'].update(data=gim.get_image(icon_path, 1))
+        oas_window[f'-name{i}-'].update(name)
+        oas_window[f'-symbol{i}-'].update(symbol)
+        oas_window[f'-price{i}-'].update(price)
+        oas_window[f'-day{i}-'].update(num2, text_color=col2)
+        oas_window[f'-mcap{i}-'].update(mcap)
+        oas_window[f'-oas{i}-'].update(mcap, text_color=oas_color)
+
+
 def update_table(main_window, current_page_data, rows_per_page):
     for i, row in enumerate(current_page_data):
         # unpack row
@@ -170,7 +198,7 @@ def update_table(main_window, current_page_data, rows_per_page):
             element = main_window[key]
             element.update(visible=True)
 
-def generate_oas_list(i, list):
+def generate_list(i, list):
     font_size = ('Aria', 12)
     font_sizeB =('Aria', 12, 'bold')
     symbol_font_size = ('Helvetica', 12, 'bold')
@@ -259,7 +287,7 @@ def generate_vol_table(list_24h):
     vol_header = oas_table_header()
     vol_list = [
         [sg.Column([
-            [sg.Column(generate_oas_list(i, list_24h), pad=((0, 0), (0, 0)))],
+            [sg.Column(generate_list(i, list_24h), pad=((0, 0), (0, 0)))],
             [sg.HorizontalSeparator(pad=((0, 0), (15, 15)), color='#f0f0f0')]
         ], pad=((0, 0), (0, 0)))]
         for i in range(5)
@@ -276,13 +304,15 @@ def generate_oas_table(list_oas):
     oas_header = oas_table_header()
     oas_list = [
         [sg.Column([
-            [sg.Column(generate_oas_list(i, list_oas), pad=((0, 0), (0, 0)))],
+            [sg.Column(generate_list(i, list_oas), pad=((0, 0), (0, 0)))],
             [sg.HorizontalSeparator(pad=((0, 0), (15, 15)), color='#f0f0f0')]
         ], pad=((0, 0), (0, 0)))]
         for i in range(5)
     ]
     oas_table = [
-        [sg.Text('Recommended coins based on Overall Score', pad=((0, 0), (40, 20)), font=table_name_font, text_color=table_oas_color)],
+        [
+            sg.Text('Top 5 coins based on Overall Assessment Score', pad=((0, 0), (40, 20)), font=table_name_font, key='-header-', text_color=table_oas_color)
+        ],
         [sg.Column(oas_header, pad=((0, 0), (0, 0)))],
         [sg.HorizontalSeparator(pad=((0, 0), (0, 15)))],
         [sg.Column(oas_list, pad=((0, 0), (0, 0)))],

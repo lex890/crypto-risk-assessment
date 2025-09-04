@@ -18,7 +18,7 @@ am_bg  = '#118ab2'
 bi_bg  = '#2e4e5a'
 bnk_bg = "#ffffff"
 # generate OAS
-def generate_oas_window(current_row, oas_table, vol_table, current_coin):
+def generate_oas_window(current_row, oas_table, current_coin):
     # Donut Graph OAS
     score = [
         [  
@@ -206,8 +206,8 @@ def generate_oas_window(current_row, oas_table, vol_table, current_coin):
     ]
 
     oas_tables = [
-        [ sg.Column(oas_table, pad=((0, 0), (0, 0))) ],
-        [ sg.Column(vol_table, pad=((0, 0), (0, 0))) ]
+        [ sg.Combo(['Overall Assessment Score', 'Market Volume Trend'], default_value='Overall Assessment Score', font=('Segoe UI', 12), key='-PRESCRIPTIVE-', pad=((0, 0), (0, 0)), tooltip='Select Prescriptive Recommendation', enable_events=True, readonly=True), ],
+        [ sg.Column(oas_table, pad=((0, 0), (0, 0))) ]
     ]
 
     oas_body = [

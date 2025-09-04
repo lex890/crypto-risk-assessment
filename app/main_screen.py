@@ -118,7 +118,7 @@ def second_column_box():
     combo_currency = [
         [
             sg.Text('Select Currency: ', font=('Segoe UI', 16), pad=((50, 0), (0, 0))),
-            sg.Combo(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'PHP'], default_value='USD', font=('Segoe UI', 12), key='-CURRENCY-', pad=((0, 0), (0, 0)), tooltip='Select Currency', enable_events=True),
+            sg.Combo(['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'PHP'], default_value='USD', font=('Segoe UI', 12), key='-CURRENCY-', pad=((0, 0), (0, 0)), tooltip='Select Currency', enable_events=True, readonly=True),
         ]
     ]
 
@@ -358,10 +358,14 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             # generate OAS window
             main_score_window = rsk.main_score_window(chart_data, current_row, selected_coin, data)
             while True:
-                event, _ = main_score_window.read()
+                event, values = main_score_window.read()
                 if event in ('-EXIT-', '-WEXIT-'):
                     main_score_window.close()
                     break
+                elif event == '-PRESCRIPTIVE-':
+                    query = values[event]
+                    print('this is query: ', query)
+                    tbl.toggle_table(query, main_score_window, data)
             main_window.UnHide()
             main_window.Maximize()
             
@@ -426,7 +430,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                 current_page_data = calculate_current_entry(current_page, rows_per_page, data)
                 tbl.update_table(main_window, current_page_data, rows_per_page)
                 main_window['-PAGENO-'].update(str(current_page))
-
+        # combo-box to select currency
         elif mw_event == '-CURRENCY-':
             stop_event.set()
             timer_thread.join()

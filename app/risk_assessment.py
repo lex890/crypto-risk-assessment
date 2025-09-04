@@ -127,11 +127,12 @@ def main_score_window(chart_data, current_row, selected_coin, data):
     list_24h = tbl.get_vol_list(data) # based on 24h vol (descending)
     
     oas_table = tbl.generate_oas_table(list_oas) # list_oas
-    vol_table = tbl.generate_vol_table(list_24h) # list_24h
+    # vol_table = tbl.generate_vol_table(list_24h) # list_24h
+    
     # store the window first to render the graph for this window
     window = sg.Window(
         "Assessment Score Guide",
-        generate_oas_window(current_row, oas_table, vol_table, current_coin),
+        generate_oas_window(current_row, oas_table, current_coin),
         modal=True,
         keep_on_top=True,
         finalize=True,
@@ -360,11 +361,13 @@ def render_upper_content(data):
     ]
 def render_lower_content(data):
     sc_text = "#ffffff"
+    ov_text = "#ffffff"
     title_size = (28, 2)
-    score_font = ("Segoe UI", 48)
+    score_font = ("Segoe UI", 36)
+    over_font  = ("Segoe UI", 36)
     title_font = ("Segoe UI", 13, 'bold')
     logo_pad = ((0, 20), (0, 0))
-    score_size = (5, 1)
+    score_size = (3, 1)
     label_size = (25, 1)
     rv_bg     = "#ef476f"
     ol_bg     = '#ffd166'
@@ -378,6 +381,7 @@ def render_lower_content(data):
         ],
         [
             sg.Text(f' {data[0][13]}', font=score_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=sc_text, key='-VOLATILITY-', enable_events=True),
+            sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=ov_text, key='-VOLATILITY1-', enable_events=True),
             sg.Image(filename='app/assets/images/volatility.png', pad=logo_pad, background_color=rv_bg, key='-RV-IMAGE-', enable_events=True)    
         ],
         [   
@@ -392,6 +396,7 @@ def render_lower_content(data):
         ],
         [
             sg.Text(f' {data[0][14]}', font=score_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=sc_text, key='-LIQUIDITY-', enable_events=True),
+            sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=ov_text, key='-LIQUIDITY1-', enable_events=True),
             sg.Image(filename='app/assets/images/liquidity.png', pad=logo_pad, background_color=ol_bg, key='-OL-IMAGE-', enable_events=True)    
         ],
         [   
@@ -406,6 +411,7 @@ def render_lower_content(data):
         ],
         [
             sg.Text(f' {data[0][15]}', font=score_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=sc_text, key='-EXCHANGE-', enable_events=True),
+            sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=ov_text, key='-EXCHANGE1-', enable_events=True),
             sg.Image(filename='app/assets/images/exchange.png', pad=logo_pad, background_color=el_bg, key='-EL-IMAGE-', enable_events=True)    
         ],
         [   
@@ -420,6 +426,7 @@ def render_lower_content(data):
         ],
         [
             sg.Text(f' {data[0][16]}', font=score_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=sc_text, key='-ANOMALY-', enable_events=True),
+            sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=ov_text, key='-ANOMALY1-', enable_events=True),
             sg.Image(filename='app/assets/images/anomaly.png', pad=logo_pad, background_color=am_bg, key='-AP-IMAGE-', enable_events=True)    
         ],
         [   

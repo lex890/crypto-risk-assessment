@@ -274,7 +274,7 @@ def generate_login_window(api_choice):
             sg.Push(),
         ],
         [
-            sg.Combo(['60', '120', '300', '600'], default_value='60', pad=((195, 0), (0, 0)), key='-SECONDS-', visible=False),
+            sg.Combo(['60', '120', '300', '600'], default_value='60', pad=((195, 0), (0, 0)), key='-SECONDS-', visible=False, readonly=True),
             sg.Text('Seconds', visible=False),
             sg.Push(),
         ],
