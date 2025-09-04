@@ -146,98 +146,6 @@ def second_column_box():
         ]
     ]
 
-    ref_danger = [
-        [
-            sg.Image(
-                filename='app/assets/images/ref-danger.png',
-                size=(20, 20), 
-                pad=((0, 5), (0, 0)), 
-                enable_events=True,
-                tooltip='High-risk investment identified.' 
-            ),
-            sg.Text(
-                'Danger',
-                font=('Helvetica', 12),
-                pad=((0, 0), (0, 0)),
-            )
-        ]
-    ]
-
-    ref_warning = [
-        [
-            sg.Image(
-                filename='app/assets/images/ref-warning.png',
-                size=(20, 20), 
-                pad=((0, 5), (0, 0)), 
-                enable_events=True,
-                tooltip='Medium-risk invest with caution.' 
-            ),
-            sg.Text(
-                'Warning',
-                font=('Helvetica', 12),
-                pad=((0, 0), (0, 0)),
-            )            
-        ]
-    ]
-
-    ref_good = [
-        [
-            sg.Image(
-                filename='app/assets/images/ref-good.png',
-                size=(20, 20), 
-                pad=((0, 5), (0, 0)), 
-                enable_events=True,
-                tooltip='Investment risk assessed as low.' 
-            ),
-            sg.Text(
-                'Good',
-                font=('Helvetica', 12),
-                pad=((0, 0), (0, 0)),
-            )
-        ]
-    ]
-
-    ref_danger_box = [
-        [
-            sg.Column(
-                ref_danger,
-                pad=((0, 0), (0, 0)))
-        ]
-    ]
-
-    ref_warning_box = [
-        [
-            sg.Column(
-                ref_warning,
-                pad=((0, 0), (0, 0)))            
-        ]
-    ]
-
-    ref_good_box = [
-        [
-            sg.Column(
-                ref_good,
-                pad=((0, 0), (0, 0)))
-        ]
-    ]
-
-    icon_reference = [
-        [
-            sg.Column(
-                ref_good_box,
-                pad=((85, 25), (25, 0))
-            ),
-            sg.Column(
-                ref_warning_box,
-                pad=((0, 25), (25, 0))
-            ),
-            sg.Column(
-                ref_danger_box,
-                pad=((0, 25), (25, 0))
-            ),
-        ]
-    ]
-
     second_layer = [
         [   
             sg.Column(sorting_buttons, pad=(0, 0)),
@@ -399,7 +307,6 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
     
     # Create stop event for timer thread
     stop_event = threading.Event()
-    
     # Start timer thread for countdown display
     timer_thread = req.start_timer_thread(main_window, stop_event)
     
@@ -412,7 +319,6 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
     while True:
         mw_event, mw_values = main_window.read(timeout=120)
         currency_choice = main_window['-CURRENCY-'].get()
-        
         # Individual Score Window
         if isinstance(mw_event, str) and mw_event in pre.ASSESSMENT_PREFIXES:
             # get score from text element 
@@ -448,15 +354,17 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             chart_key = mw_values[mw_event]['key']
             chart_data = plg.score_data_for_canvas[chart_key]['data']
             main_window.hide()
+            current_row = selected_coin
             # generate OAS window
-            main_score_window = rsk.main_score_window(chart_data)
+            main_score_window = rsk.main_score_window(chart_data, current_row, selected_coin, data)
             while True:
                 event, _ = main_score_window.read()
-                if event == '-EXIT-':
+                if event in ('-EXIT-', '-WEXIT-'):
                     main_score_window.close()
                     break
             main_window.UnHide()
             main_window.Maximize()
+            
         # Logo click to exit
         elif mw_event in ('-HEADERICON-', 'HEADER'):
             # Stop the timer thread before closing
@@ -489,6 +397,8 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                 # Fetch next set of cryptocurrencies
                 try:    
                     current_page += 1
+                    stop_event.set()
+                    timer_thread.join()
                     # Fetch the next 10 coins
                     new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
                     if new_data:
@@ -503,6 +413,8 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                         current_page_data = calculate_current_entry(current_page, rows_per_page, data)
                         tbl.update_table(main_window, current_page_data, rows_per_page)
                         main_window['-PAGENO-'].update(str(current_page))
+                        stop_event.clear()
+                        timer_thread = req.start_timer_thread(main_window, stop_event)
                     else:
                         sg.popup_auto_close('No more cryptocurrencies available.', auto_close_duration=2)
                 except Exception as e:
@@ -516,6 +428,8 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                 main_window['-PAGENO-'].update(str(current_page))
 
         elif mw_event == '-CURRENCY-':
+            stop_event.set()
+            timer_thread.join()
             overlay_win = lod.show_dimmed_overlay()
             currency = mw_values[mw_event]
             _, data, filepath = lod.login_loading(api_key, api_choice, currency)
@@ -524,6 +438,8 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             tbl.update_table(main_window, current_page_data, rows_per_page)
             main_window['-PAGENO-'].update(str(current_page))        
             overlay_win.close()
+            stop_event.clear()
+            timer_thread = req.start_timer_thread(main_window, stop_event)
              
         elif mw_event == '-HYPERLINK-':
             webbrowser.open(hyper_link)  # Replace with your URL
@@ -564,6 +480,9 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             
 
         elif mw_event in ('-SBUTTON-', 'Return', '\r', '\n'):
+            stop_event.set()
+            timer_thread.join()
+            
             search_bar_val = mw_values['-SEARCHBAR-']
             search_query = search_bar_val.strip()
 
@@ -574,7 +493,7 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
                 search_window, search_terms = lod.search_screen_loading(api_key, api_choice, search_query, currency_choice, filepath)
                 log.setup_hover_effects(search_window)
                 while True:
-                    sw_event, sw_values = search_window.read()
+                    sw_event, _ = search_window.read()
                     
                     if sw_event == '-CLOSE-':
                         search_window.close()
@@ -600,6 +519,8 @@ def main_window_handler(main_window, headings, data, current_page, rows_per_page
             finally:
                 if 'overlay_win' in locals():
                     overlay_win.close()
+            stop_event.clear()
+            timer_thread = req.start_timer_thread(main_window, stop_event)
 
         elif mw_event in (sg.WIN_CLOSED, 'Exit'):
             # Stop the timer thread before closing

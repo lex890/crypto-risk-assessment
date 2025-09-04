@@ -12,3 +12,5 @@ Requests==2.32.4
 scikit_learn==1.7.1
 scrapy==2.13.3
 transformers==4.54.1
+tensorflow==2.20
+torch==2.8.0

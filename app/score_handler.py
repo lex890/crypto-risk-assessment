@@ -18,9 +18,18 @@ import statistics
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 np.random.seed(7122025)
-sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-min_contamination = 0.02
-mad_contamination = 0.12
+sentiment_analyzer = None
+DEFAULT_WEIGHTS = {
+    "Realized Volatility": 0.25,
+    "Liquidity and Order Book Depth": 0.25,
+    "Exchange Listings and Reputation": 0.125,
+    "Transaction Patterns and Anomalies": 0.125,
+    "Developer and Team Transparency": 0.05,
+    "Smart Contract Audit and Security Measures": 0.05,
+    "Whitepaper and Roadmap Assessment": 0.04,
+    "Regulatory Compliance and Legal Standing": 0.04,
+    "Community and Social Media Presence": 0.03
+}
 crypto_schema = {
     '#': {'type': 'integer', 'required': True},
     'Name': {'type': 'string', 'required': True, 'empty': False},
@@ -36,6 +45,39 @@ crypto_schema = {
     'Website': {'type': 'string', 'required': False, 'nullable': True},
     'Source Code': {'type': 'string', 'required': False, 'nullable': True},
 }
+def calculate_total_score(scores):
+    """
+    Calculate total score using DEFAULT_WEIGHTS.
+    Binary metrics get 10 points if 1, else 0.
+    Total score is scaled so the sum < 100.
+    """
+    required_metrics = list(DEFAULT_WEIGHTS.keys())
+    for metric in required_metrics:
+        if metric not in scores:
+            raise ValueError(f"Missing score for: {metric}")
+
+    scale_factor = 100 / 10  # To scale weighted max of 10 up to ~100
+
+    weighted_sum = 0
+    for metric, weight in DEFAULT_WEIGHTS.items():
+        value = scores[metric]
+
+        # If this is one of the binary metrics, convert 1 → 10, 0 → 0
+        if metric in [
+            "Developer and Team Transparency",
+            "Smart Contract Audit and Security Measures",
+            "Whitepaper and Roadmap Assessment",
+            "Regulatory Compliance and Legal Standing",
+            "Community and Social Media Presence"
+        ]:
+            value = 10 if value == 1 else 0
+
+        weighted_sum += value * weight
+
+    total_score = weighted_sum * scale_factor
+    total_score = min(total_score, 100)  # Clamp to < 100
+
+    return int(total_score)
 
 # Initialize Cerberus validator
 validator = Validator(crypto_schema, allow_unknown=False)
@@ -57,42 +99,246 @@ score_header = [
     "Anomaly Detection Score"
 ]
 # Load API keys
-COINGECKO_DEMO_API_KEY = keystore.load_api_key('CoinGecko', 'CGKEY')
+COINGECKO_DEMO_API_KEYS = keystore.load_api_key('CoinGecko', 'CGKEY')
+COINGECKO_BASE = 'https://api.coingecko.com/api/v3'
 GITHUB_TOKEN = keystore.load_api_key('GitHub', 'GITHUB_TOKEN')
+if isinstance(GITHUB_TOKEN, list):
+    GITHUB_TOKEN = GITHUB_TOKEN[0]
+GITHUB_TOKEN = GITHUB_TOKEN.strip()
 NEWSAPI_KEYS = [
     "026ffd3bcbab4b5d896839af5f5d21ed",
     "74ba9d945b144ae7b77c1fb2db4f7afb",
     "753aa7b2266549d5a327cc06421b5641",
     "f828a52f2080498dacd9513ccf67d8bc",
     ]
-if not COINGECKO_DEMO_API_KEY:
-    raise ValueError("COINGECKO_DEMO_API_KEY is required in settings.cfg")
+for COINGECKO_DEMO_API_KEY in COINGECKO_DEMO_API_KEYS:
+    if not COINGECKO_DEMO_API_KEY:
+       raise ValueError("COINGECKO_DEMO_API_KEY is required in settings.cfg")
 
 # Cache for symbol to coin ID mapping
 # ======= MISC =======
 symbol_to_coin_id_cache = {}
+preferred_ids = {
+"BTC": "bitcoin",
+"ETH": "ethereum",
+"XRP": "ripple",
+"USDT": "tether",
+"BNB": "binancecoin",
+"SOL": "solana",
+"USDC": "usd-coin",
+"STETH": "staked-ether",
+"DOGE": "dogecoin",
+"TRX": "tron",
+"ADA": "cardano",
+"WSTETH": "wrapped-steth",
+"WBTC": "wrapped-bitcoin",
+"HYPE": "hyperliquid",
+"LINK": "chainlink",
+"XLM": "stellar",
+"SUI": "sui",
+"WBETH": "wrapped-beacon-eth",
+"WEETH": "wrapped-eeth",
+"BCH": "bitcoin-cash",
+"HBAR": "hedera-hashgraph",
+"AVAX": "avalanche-2",
+"USDE": "ethena-usde",
+"WETH": "weth",
+"LTC": "litecoin",
+"TON": "the-open-network",
+"LEO": "leo-token",
+"SHIB": "shiba-inu",
+"USDS": "usds",
+"BSC-USD": "binance-bridged-usdt-bnb-smart-chain",
+"UNI": "uniswap",
+"WBT": "whitebit",
+"CBBTC": "coinbase-wrapped-btc",
+"DOT": "polkadot",
+"CRO": "crypto-com-chain",
+"BGB": "bitget-token",
+"PEPE": "pepe",
+"SUSDE": "ethena-staked-usde",
+"XMR": "monero",
+"ENA": "ethena",
+"AAVE": "aave",
+"DAI": "dai",
+"TAO": "bittensor",
+"MNT": "mantle",
+"ETC": "ethereum-classic",
+"NEAR": "near",
+"ONDO": "ondo-finance",
+"APT": "aptos",
+"PI": "pi-network",
+"ICP": "internet-computer",
+"OKB": "okb",
+"JITOSOL": "jito-staked-sol",
+"KAS": "kaspa",
+"PENGU": "pudgy-penguins",
+"ARB": "arbitrum",
+"ALGO": "algorand",
+"BUIDL": "blackrock-usd-institutional-digital-liquidity-fund",
+"POL": "polygon-ecosystem-token",
+"USD1": "usd1-wlfi",
+"ATOM": "cosmos",
+"VET": "vechain",
+"BONK": "bonk",
+"RENDER": "render-token",
+"GT": "gatechain-token",
+"WLD": "worldcoin-wld",
+"FTN": "fasttoken",
+"RETH": "rocket-pool-eth",
+"SEI": "sei-network",
+"IP": "story-2",
+"TRUMP": "official-trump",
+"SUSDS": "susds",
+"RSETH": "kelp-dao-restaked-eth",
+"BNSOL": "binance-staked-sol",
+"SKY": "sky",
+"FET": "fetch-ai",
+"JLP": "jupiter-perpetuals-liquidity-provider-token",
+"FIL": "filecoin",
+"SPX": "spx6900",
+"QNT": "quant-network",
+"FLR": "flare-networks",
+"JUP": "jupiter-exchange-solana",
+"LBTC": "lombard-staked-btc",
+"OSETH": "stakewise-v3-oseth",
+"XDC": "xdce-crowd-sale",
+"METH": "mantle-staked-ether",
+"LSETH": "liquid-staked-ethereum",
+"USDTB": "usdtb",
+"KCS": "kucoin-shares",
+"HASH": "hash-2",
+"INJ": "injective-protocol",
+"OP": "optimism",
+"CRV": "curve-dao-token",
+"USDT0": "usdt0",
+"EZETH": "renzo-restaked-eth",
+"NEXO": "nexo",
+"STX": "blockstack",
+"TIA": "celestia",
+"FDUSD": "first-digital-usd",
+"USDF": "falcon-finance",
+"VIRTUAL": "virtual",
+"PENDLE": "pendle",
+"CLBTC": "clbtc",
+"KAIA": "kaia",
+"CGETH.HASHKEY": "cgeth-hashkey-cloud",
+"THETA": "theta-token",
+"EETH": "ether-fi-staked-eth",
+"A": "vaulta",
+"MSOL": "msol",
+"IOTA": "iota",
+"RAY": "raydium",
+"GALA": "gala",
+"JASMY": "jasmycoin",
+"SAND": "the-sandbox",
+"CMETH": "mantle-restaked-eth",
+"OUSG": "ousg",
+"MORPHO": "morpho",
+"BTT": "bittorrent",
+"JTO": "jito-governance-token",
+"USDY": "ondo-us-dollar-yield",
+"USDX": "usdx-money-usdx",
+"FLOKI": "floki-inu",
+"CFX": "conflux-network",
+"IMX": "immutable-x",
+"FARTCOIN": "fartcoin",
+"ENS": "ethereum-name-service",
+"LDO": "lido-dao",
+"PYUSD": "paypal-usd",
+"GRT": "the-graph",
+"WIF": "dogwifhat",
+"CAKE": "pancakeswap",
+"XTZ": "tezos",
+"PAXG": "pax-gold",
+"AERO": "aerodrome-finance",
+"PUMP": "pump-fun",
+"FORM": "binaryx-new",
+"BSV": "bitcoin-sv",
+"DEEP": "deepbook-protocol",
+"CORE": "core-dao",
+"RSR": "reserve-rights",
+"STRK": "starknet-token",
+"ETHFI": "ether-fi-ethfi",
+"AR": "arweave",
+"DYDX": "dydx-chain",
+"COMP": "compound",
+"USDD": "usdd",
+"RUNE": "thorchain",
+"XCN": "onyxcoin",
+"TUSD": "trueusd",
+"APE": "apecoin-ape",
+"ZBCN": "zebec-network",
+"NFT": "apenft",
+"SUPER": "superverse",
+"NEO": "neo",
+"CVX": "convex-finance",
+"EGLD": "multiversx-egld",
+"EIGEN": "eigenlayer",
+"AIOZ": "aioz-network",
+"W": "wormhole",
+"XEC": "ecash",
+"ZK": "zksync",
+"KAVA": "kava",
+"CHZ": "chiliz",
+"SUN": "sun-token",
+"AXS": "axie-infinity",
+"1INCH": "1inch",
+"BEAM": "onbeam",
+"RON": "ronin",
+"ATH": "aethir",
+"MOVE": "movement",
+"AXL": "axelar",
+"GNO": "gnosis-gno",
+"WEMIX": "wemix",
+"PYTH": "pyth-network",
+"M": "memecore",
+"BRETT": "based-brett",
+"WAL": "walrus-xyz",
+"AB": "newton",
+"BUILD": "buildon",
+"MOG": "mog-coin",
+"HNT": "helium",
+"SYRUP": "maple-finance"
+}
+def estimated_outlier_fraction_mad(data, threshold=3.5):
+    """
+    Estimate fraction of outliers using MAD method.
+    threshold: how many scaled MAD units to call something an outlier.
+    """
+    data = np.array(data)
+    median = np.median(data)
+    mad = np.median(np.abs(data - median))
+    if mad == 0:
+        return 0.0  # No variation
+    modified_z_scores = 0.6745 * (data - median) / mad
+    outliers = np.abs(modified_z_scores) > threshold
+    return np.mean(outliers)
 def get_coin_id(symbol):
     """Map a coin symbol to its CoinGecko coin ID."""
     symbol = symbol.upper()
-    if symbol in symbol_to_coin_id_cache:
-        return symbol_to_coin_id_cache[symbol]
-    
-    try:
-        response = requests.get(
-            'https://api.coingecko.com/api/v3/coins/list',
-            params={'x_cg_demo_api_key': COINGECKO_DEMO_API_KEY}
-        )
-        response.raise_for_status()
-        coins = response.json()
-        for coin in coins:
-            if coin['symbol'].upper() == symbol:
-                symbol_to_coin_id_cache[symbol] = coin['id']
-                return coin['id']
-        logger.warning(f"No CoinGecko coin ID found for symbol {symbol}")
-        return None
-    except requests.RequestException as e:
-        logger.error(f"Error fetching coin list: {e}")
-        return None
+    if symbol in preferred_ids:
+        return preferred_ids[symbol]
+    else:
+        if symbol in symbol_to_coin_id_cache:
+            return symbol_to_coin_id_cache[symbol]
+        
+        try:
+            response = requests.get(
+                f'{COINGECKO_BASE}/coins/list',
+                params={'x_cg_demo_api_key': COINGECKO_DEMO_API_KEY}
+            )
+            response.raise_for_status()
+            coins = response.json()
+            for coin in coins:
+                if coin['symbol'].upper() == symbol:
+                    symbol_to_coin_id_cache[symbol] = coin['id']
+                    return coin['id']
+            logger.warning(f"No CoinGecko coin ID found for symbol {symbol}")
+            return None
+        except requests.RequestException as e:
+            logger.error(f"Error fetching coin list: {e}")
+            return None
 def make_coingecko_request(url, retries=3, backoff_factor=2):
     """Make a CoinGecko API request with retry logic for rate limits."""
     params = {'x_cg_demo_api_key': COINGECKO_DEMO_API_KEY}
@@ -106,6 +352,7 @@ def make_coingecko_request(url, retries=3, backoff_factor=2):
                 wait_time = backoff_factor ** attempt
                 logger.warning(f"Rate limit hit for {url}. Retrying after {wait_time} seconds...")
                 time.sleep(wait_time)
+                continue
             else:
                 logger.error(f"HTTP error for {url}: {e}")
                 raise
@@ -140,23 +387,32 @@ def fetch_news_headlines(symbol):
     return [f"No recent news available for {symbol}"]
 
 def get_sentiment_score(symbol):
-    """Perform sentiment analysis on fetched headlines using DistilBERT."""
+    """Perform sentiment analysis on fetched headlines using DistilBERT (lazy load)."""
+    global sentiment_analyzer
+
+    # Lazy load the model on first use
+    if sentiment_analyzer is None:
+        logger.info("Loading sentiment analysis model for the first time...")
+        from transformers import pipeline
+        sentiment_analyzer = pipeline(
+            "sentiment-analysis",
+            model="distilbert-base-uncased-finetuned-sst-2-english"
+        )
+
     headlines = fetch_news_headlines(symbol)
     scores = []
     for text in headlines:
-        # Skip placeholder headlines indicating no news
         if "No recent news available" in text:
             continue
         result = sentiment_analyzer(text)[0]
-        # Convert DistilBERT output to polarity score (-1 to 1)
         polarity = result["score"] if result["label"] == "POSITIVE" else -result["score"]
         scores.append(polarity)
-    
-    avg_score = sum(scores) / len(scores)
-    if avg_score > 0.25:
-        return 1
-    else:
+
+    if not scores:
         return 0
+
+    avg_score = sum(scores) / len(scores)
+    return 1 if avg_score > 0.25 else 0
 def score_news_coverage(symbol, crypto_name):
     """Score news coverage based on article count from scraped news."""
     try:
@@ -187,14 +443,14 @@ def score_news_coverage(symbol, crypto_name):
             return 6
         elif article_count >= 1:
             return 4
-        return 2
+        return 5
     except Exception as e:
         logger.error(f"Error fetching news for {symbol}: {e}")
-        return 3
+        return 5
 
 # === Fetch historical volume data ===
 def get_historical_volume(coin_id, currency='usd', days=30):
-    url = f'https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart'
+    url = f'{COINGECKO_BASE}/coins/{coin_id}/market_chart'
     params = {
         'vs_currency': currency,
         'days': days,
@@ -291,7 +547,7 @@ def fetch_transaction_data(symbol,days):
         coin_id = symbol_to_coin_id_cache.get(symbol)
         if not coin_id:
             # fallback to API search if not cached
-            list_url = f"https://api.coingecko.com/api/v3/coins/list?x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
+            list_url = f"{COINGECKO_BASE}/coins/list?x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
             resp = requests.get(list_url)
             resp.raise_for_status()
             for coin in resp.json():
@@ -302,7 +558,7 @@ def fetch_transaction_data(symbol,days):
             if not coin_id:
                 raise ValueError(f"CoinGecko ID not found for {symbol}")
 
-        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart?vs_currency=usd&days={days}&x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
+        url = f"{COINGECKO_BASE}/coins/{coin_id}/market_chart?vs_currency=usd&days={days}&x_cg_demo_api_key={COINGECKO_DEMO_API_KEY}"
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
@@ -317,11 +573,10 @@ def detect_anomalies(symbol):
     """Use Isolation Forest to detect anomalies in 30 days of price data."""
     try:
         data = fetch_transaction_data(symbol, days=30)
-        random_contamination = np.random.uniform(min_contamination, mad_contamination)
         model = IsolationForest(
             n_estimators=100,
             max_samples='auto',
-            contamination=random_contamination,
+            contamination= max(0.01, min(0.1, estimated_outlier_fraction_mad(data))),
             random_state=5
         )
         preds = model.fit_predict(data)
@@ -350,13 +605,14 @@ def detect_anomalies(symbol):
 
     except Exception as e:
         logger.error(f"Error in anomaly detection for {symbol}: {e}")
-        return 1  # Default score on error
+        return 5  # Default score on error
 # ======= VOLATILITY =======
-def fetch_prices(coin_id, days):
+def fetch_prices(symbol, days):
     """
     Fetch historical daily closing prices from CoinGecko
     """
-    url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+    coin_id = get_coin_id(symbol)
+    url = f"{COINGECKO_BASE}/coins/{coin_id}/market_chart"
     params = {
         'vs_currency': 'usd',
         'days': days,
@@ -388,9 +644,8 @@ def score_volatility(symbol, days=30):
     """Market Volatility of a Coin."""
     
     try:
-        coin_id = get_coin_id(symbol)
         #list of closing prices in the last 30 days
-        prices = fetch_prices(coin_id, days)
+        prices = fetch_prices(symbol, days)
         if len(prices) > 2:
             log_returns = compute_log_returns(prices)
             volatility  = (compute_historical_volatility(log_returns)) * 100
@@ -420,10 +675,10 @@ def score_volatility(symbol, days=30):
                 return 1
         else:
             print("Not enough data to compute.")
-            return 0
+            return 5
     except (ValueError, TypeError) as e:
         logger.error(f"Error calculating token volatility: {e}")
-        return 0
+        return 5
 
 # ======= LIQUIDITY & ORDER BOOK DEPTH =======    
 def spread_metric_score(value, bands):
@@ -443,51 +698,64 @@ def score_market_cap_liquidity(symbol, current_price, volume_24h):
     coin_id = get_coin_id(symbol)
     if not coin_id:
         logger.error(f"No CoinGecko coin ID found for symbol {symbol}")
-        return 1  # Return default score if coin ID is not found
+        return 5  # Return default score if coin ID is not found
 
     try:
-        # Convert current_price to float, handling currency symbols and formatting
+        url = f"{COINGECKO_BASE}/coins/{coin_id}"
+        response = make_coingecko_request(url)  # Use retry logic for API calls
+        data = response.json()
+
+        # Use API's current price and 24h change for consistency
+        api_current_price = data.get('market_data', {}).get('current_price', {}).get('usd')
+        api_volume_24h_pct = data.get('market_data', {}).get('price_change_percentage_24h', 0) / 100
+
+        # Parse input current_price if provided, else use API
         if isinstance(current_price, str):
             current_price = current_price.replace('$', '').replace(',', '').strip()
             current_price = float(current_price)
-        elif not isinstance(current_price, (int, float)):
-            logger.error(f"Invalid current_price type for {symbol}: {type(current_price)}")
-            return 1
+        elif isinstance(current_price, (int, float)):
+            pass  # Already good
+        else:
+            logger.warning(f"Invalid current_price type for {symbol}: {type(current_price)}. Using API value.")
+            current_price = api_current_price if api_current_price else 0.0
 
-        # Convert volume_24h to decimal (e.g., "5.2%" → 0.052, or "5.2" → 0.052)
+        # If no valid current_price, default
+        if current_price == 0.0:
+            logger.error(f"No valid current_price for {symbol}")
+            return 5
+
+        # Parse input volume_24h (24h % change) if provided, else use API
         if isinstance(volume_24h, str):
             volume_24h = volume_24h.replace('%', '').strip()
-            volume_24h = float(volume_24h) / 100 if volume_24h else 0.0
-        elif not isinstance(volume_24h, (int, float)):
-            logger.error(f"Invalid volume_24h type for {symbol}: {type(volume_24h)}")
-            return 1
-
-        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
-        response = make_coingecko_request(url)  # Use retry logic for API calls
-        data = response.json()
+            volume_24h = float(volume_24h) / 100 if volume_24h else api_volume_24h_pct
+        elif isinstance(volume_24h, (int, float)):
+            volume_24h /= 100 if abs(volume_24h) > 1 else volume_24h  # Assume if >1 it's not decimal
+        else:
+            logger.warning(f"Invalid volume_24h type for {symbol}: {type(volume_24h)}. Using API value.")
+            volume_24h = api_volume_24h_pct
 
         # Check if 'tickers' key exists and is non-empty
         if 'tickers' not in data or not data['tickers']:
             logger.warning(f"No tickers found for {symbol} (coin_id: {coin_id})")
-            return 1  # Return default score if no tickers are available
+            return 5  # Return default score if no tickers are available
 
         prices = []
         exchanges = []
         logger.debug(f"Tickers data: {data['tickers']}")
         for ticker in data['tickers']:
             if ticker.get('trust_score') in {'green', 'yellow'}:
-                price = ticker.get('last')
+                usd_price = ticker.get('converted_last', {}).get('usd')
                 exchange = ticker.get('market', {}).get('name')
-                if price and exchange:
-                    prices.append(float(price))  # Ensure price is float
+                if usd_price and exchange:
+                    prices.append(float(usd_price))  # Use normalized USD price
                     exchanges.append(exchange)
 
-        if not prices:
-            logger.warning(f"No valid tickers with green trust score for {symbol}")
-            return 1  # Return default score if no valid tickers are found
+        if not prices or len(prices) < 3:  # Require at least 3 valid prices for meaningful calculation
+            logger.warning(f"Insufficient valid tickers ({len(prices)}) for {symbol}")
+            return 5  # Return default score if no/few valid tickers
 
-        proxy_bid = float(min(prices))
-        proxy_ask = float(max(prices))
+        proxy_bid = min(prices)
+        proxy_ask = max(prices)
         mid_price = (proxy_bid + proxy_ask) / 2
 
         # Calculate prev_price using volume_24h as a percentage change
@@ -513,7 +781,15 @@ def score_market_cap_liquidity(symbol, current_price, volume_24h):
         effect_bps = (2 * Q * ((current_price - mid_price) / mid_price)) * 10_000 if mid_price != 0 else float('inf')
         impact_bps = Q * ((m_after - mid_price) / mid_price) * 10_000 if mid_price != 0 else float('inf')
 
-        # Score each metric
+        # Handle inf by setting to high value (e.g., 1000 bps) for low score
+        if spread_bps == float('inf'):
+            spread_bps = 1000
+        if effect_bps == float('inf'):
+            effect_bps = 1000
+        if impact_bps == float('inf'):
+            impact_bps = 1000
+
+        # Score each metric (adjust bands if needed for crypto; these seem reasonable)
         score_qs = spread_metric_score(spread_bps, (5, 15, 30, 60))
         score_es = spread_metric_score(abs(effect_bps), (7, 20, 40, 80))
         score_pi = spread_metric_score(abs(impact_bps), (3, 8, 15, 30))
@@ -524,15 +800,15 @@ def score_market_cap_liquidity(symbol, current_price, volume_24h):
 
     except requests.RequestException as e:
         logger.error(f"Error fetching tickers for {symbol}: {e}")
-        return 1  # Return default score on API failure
+        return 5  # Return default score on API failure
     except (ValueError, TypeError, ZeroDivisionError) as e:
         logger.error(f"Error processing liquidity data for {symbol}: {e}")
         logger.debug(f"Data snapshot: current_price={current_price}, volume_24h={volume_24h}, prices={prices}")
-        return 1  # Return default score on data processing errors
+        return 5  # Return default score on data processing errors
 # ======= DEVELOPER AND TEAM TRANSPARENCY =======
 def make_github_request(url, retries=3, backoff_factor=2):
     """Make a GitHub API request with retry logic for rate limits."""
-    headers = {'Authorization': f'token {GITHUB_TOKEN}'} if GITHUB_TOKEN else {}
+    headers = {'Authorization': f'Bearer {GITHUB_TOKEN}'} if GITHUB_TOKEN else {}
     headers['Accept'] = 'application/vnd.github+json'
     for attempt in range(retries):
         try:
@@ -544,6 +820,7 @@ def make_github_request(url, retries=3, backoff_factor=2):
                 wait_time = backoff_factor ** attempt
                 logger.warning(f"GitHub rate limit hit for {url}. Retrying after {wait_time} seconds...")
                 time.sleep(wait_time)
+                continue
             else:
                 logger.error(f"HTTP error for {url}: {e}")
                 raise
@@ -551,55 +828,77 @@ def make_github_request(url, retries=3, backoff_factor=2):
             logger.error(f"Request error for {url}: {e}")
             raise
     raise Exception(f"Failed to fetch {url} after {retries} attempts")
-def score_developer_transparency(symbol):
-    """Score developer transparency using GitHub's REST API."""
+def score_developer_transparency(symbol,backoff_factor = 2):
+    """
+    Scores developer transparency:
+    - First checks if CoinGecko lists a GitHub repository for the coin.
+    - If yes, queries GitHub API for activity.
+    - If no GitHub link → returns 0.
+    """
     try:
-        # Search for repositories related to the cryptocurrency
-        search_url = 'https://api.github.com/search/repositories'
-        query = f"{symbol} topic:cryptocurrency"
-        response = make_github_request(f"{search_url}?q={query}&sort=stars&per_page=1")
-        data = response.json()
-        items = data.get('items', [])
-        if not items:
-            logger.info(f"No GitHub repositories found for symbol {symbol}")
+        # Step 1: Get CoinGecko ID
+        coin_id = get_coin_id(symbol)
+        if not coin_id:
+            logger.warning(f"No CoinGecko ID found for {symbol}")
             return 0
 
-        repo = items[0]
-        owner = repo['owner']['login']
-        repo_name = repo['name']
-        
-        # Fetch recent commits (last 100 to avoid excessive API calls)
-        commits_url = f"https://api.github.com/repos/{owner}/{repo_name}/commits?per_page=100"
-        commits_resp = make_github_request(commits_url)
-        commits = commits_resp.json()
-        commit_count = len(commits)
+        # Step 2: Fetch coin details from CoinGecko
+        for COINGECKO_DEMO_API_KEY in COINGECKO_DEMO_API_KEYS:
+            url = f"{COINGECKO_BASE}/coins/{coin_id}"
+            resp = requests.get(url, timeout=10)
+            if resp.status_code == 429:
+                wait_time = backoff_factor ** COINGECKO_DEMO_API_KEYS.index(COINGECKO_DEMO_API_KEY)
+                logger.warning(f'Rate limit reached, trying again in {wait_time} seconds')
+                time.sleep(wait_time)
+                continue
+            elif resp.status_code != 200:
+                logger.warning(f"Failed to fetch CoinGecko details for {symbol}: {resp.status_code}")
+                return 0
 
-        time.sleep(1)  # Respect GitHub rate limits
-        score = 0
-        if commit_count > 2:
-            score +=1
-        if commit_count > 4:
-            score +=1
-        if commit_count > 8:
-            score +=1
-        if commit_count > 16:
-            score +=1
-        if commit_count > 32:
-            score +=1
-        if commit_count > 64:
-            score +=1
-        if commit_count > 128:
-            score +=1
-        if commit_count > 256:
-            score +=1
-        if commit_count > 512:
-            score +=1
-        if commit_count > 1024:
-            score +=1
-        if score >=5:
-            return 1
-    except requests.RequestException as e:
-        logger.error(f"Error fetching GitHub data for {symbol}: {e}")
+        data = resp.json()
+        links = data.get('links', {})
+        logger.debug(f"CoinGecko links for {symbol}: {links}")
+        
+        github_links = links.get('repos_url', {}).get('github', [])
+        logger.debug(f"GitHub links for {symbol}: {github_links}")
+        
+        # Step 3: Check if GitHub repo link exists
+        if not github_links:
+            logger.info(f"No GitHub link found for {symbol} on CoinGecko")
+            return 0
+
+        # Use the first GitHub link
+        github_url = github_links[0]
+        parts = github_url.rstrip("/").split("/")
+        if len(parts) < 2:
+            logger.warning(f"Invalid GitHub URL format for {symbol}: {github_url}")
+            return 0
+
+        owner, repo = parts[-2], parts[-1]
+
+        # Step 4: Query GitHub API for repository details
+        headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
+        gh_url = f"https://api.github.com/repos/{owner}/{repo}"
+        gh_resp = requests.get(gh_url, headers=headers, timeout=10)
+
+        if gh_resp.status_code == 401:
+            logger.error("GitHub API Unauthorized — check your token.")
+            return 0
+        elif gh_resp.status_code != 200:
+            logger.warning(f"GitHub API error for {symbol}: {gh_resp.status_code}")
+            return 0
+
+        repo_data = gh_resp.json()
+
+        # Example scoring: 1 if there's been a push in the last 90 days
+        from datetime import datetime, timezone
+        last_push = datetime.strptime(repo_data.get("pushed_at", ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        days_since_push = (datetime.now(timezone.utc) - last_push).days
+
+        return 1 if days_since_push <= 90 else 0
+
+    except Exception as e:
+        logger.error(f"Error scoring developer transparency for {symbol}: {e}")
         return 0
 
 # ======= SMART CONTRACT AUDIT AND SECURITY MEASURES =======
@@ -609,7 +908,7 @@ def score_contract_audit(symbol):
     if not coin_id:
         return 0
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{coin_id}'
+        url = f'{COINGECKO_BASE}/coins/{coin_id}'
         response = make_coingecko_request(url)
         data = response.json()
 
@@ -645,7 +944,7 @@ def score_exchange_listings(symbol):
         return 1
 
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{coin_id}/tickers'
+        url = f'{COINGECKO_BASE}/coins/{coin_id}/tickers'
         response = make_coingecko_request(url)
         tickers = response.json().get('tickers', [])
         
@@ -679,11 +978,11 @@ def score_exchange_listings(symbol):
             return 3
         elif count >= 2:
             return 2
-        return 1
+        return 5
 
     except requests.RequestException as e:
         logger.error(f"Error fetching exchange listings for {symbol}: {e}")
-        return 1
+        return 5
 
 # ======= WHITEPAPER AND ROADMAP ASSESSMENT =======
 def score_whitepaper_roadmap(symbol):
@@ -692,7 +991,7 @@ def score_whitepaper_roadmap(symbol):
     if not coin_id:
         return 0
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{coin_id}'
+        url = f'{COINGECKO_BASE}/coins/{coin_id}'
         response = make_coingecko_request(url)
         data = response.json()
         description = data.get('description', {}).get('en', '')
@@ -726,7 +1025,7 @@ def score_regulatory_compliance(symbol):
     if not coin_id:
         return 0
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{coin_id}'
+        url = f'{COINGECKO_BASE}/coins/{coin_id}'
         response = make_coingecko_request(url)
         data = response.json()
         tags = data.get('categories', [])
@@ -782,23 +1081,17 @@ def evaluate_cryptos(cryptos, currency_choice, progress_callback=None):
         website = coin.get('Website')
         source_code = coin.get('Source Code')
         
-        score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)        
-        score_txn = 10 if crypto_name == 'Bitcoin' else detect_anomalies(symbol)
-        score_vol = 10 if crypto_name == 'Bitcoin' else score_volatility(symbol)
-        score_liquidity = 10 if crypto_name == 'Bitcoin' else score_market_cap_liquidity(symbol, current_price, volume_24h)
+        score_exchange =  score_exchange_listings(symbol)        
+        score_txn =  detect_anomalies(symbol)
+        score_vol =  score_volatility(symbol)
+        score_liquidity =  score_market_cap_liquidity(symbol, current_price, volume_24h)
 
         # 1 == True
-        score_dev = 1 if crypto_name == 'Bitcoin' else score_developer_transparency(symbol)
-        score_audit = 1 if crypto_name == 'Bitcoin' else score_contract_audit(symbol)
-        score_whitepaper = 1 if crypto_name == 'Bitcoin' else score_whitepaper_roadmap(symbol)
-        score_regulation = 1 if crypto_name == 'Bitcoin' else score_regulatory_compliance(symbol)
-        score_social = 1 if crypto_name == 'Bitcoin' else get_sentiment_score(symbol)        
-        # Ethereum-specific score adjustments
-        if score_exchange <= 7 and crypto_name == 'Ethereum':
-            score_exchange = score_exchange + 3
-        if crypto_name == 'Ethereum' and score_txn <= 7:
-            score_txn = score_txn + 3
-        
+        score_dev = score_developer_transparency(symbol)
+        score_audit =  score_contract_audit(symbol)
+        score_whitepaper = score_whitepaper_roadmap(symbol)
+        score_regulation = score_regulatory_compliance(symbol)
+        score_social = get_sentiment_score(symbol)        
         # Compile scores into result dictionary
         scores = {
             '#': rank_number,
@@ -825,21 +1118,8 @@ def evaluate_cryptos(cryptos, currency_choice, progress_callback=None):
             'Whitepaper and Roadmap Assessment': score_whitepaper,
             'Regulatory Compliance and Legal Standing': score_regulation,
             'Smart Contract Audit and Security Measures': score_audit  
-        }
-
-        # adjust
-        bscore = 0
-        if score_dev == 1:
-            bscore +=4
-        if score_social == 1:
-            bscore +=4
-        if score_whitepaper == 1:
-            bscore +=4    
-        if score_regulation == 1:
-            bscore +=4    
-        if score_audit == 1:
-            bscore +=4                                            
-        scores['Total Score'] = int((score_vol * 2) + (score_liquidity * 2) + (score_exchange * 2) + (score_txn * 2) + bscore)
+        }                        
+        scores["Total Score"] = calculate_total_score(scores)
         results.append(scores)
         if progress_callback:
             progress = 50 + int((idx / 9) * 48)

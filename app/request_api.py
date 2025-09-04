@@ -22,7 +22,7 @@ cmc_rate_limit = '10'
 
 cg_search_url = 'https://api.coingecko.com/api/v3/search'
 cg_rate_limit = 10
-
+cg_coin_url = 'https://api.coingecko.com/api/v3/coins/list'
 def format_price_15_chars(price):
     abs_price = abs(price)
 
@@ -43,31 +43,26 @@ def api_request(api_key, api_choice, currency_choice, progress_callback=None):
 
 def start_timer_thread(window, stop_event=None):
     """
-    Start a timer thread that updates the timer display every second.
-    
+    Start a repeating 60-second countdown timer in a separate thread.
     Args:
         window: The PySimpleGUI window to update
         stop_event: Threading event to signal when to stop the timer
     """
     def update_timer():
-        """Update the timer display every second"""
-        countdown = 60
-        while True:
-            # Check if we should stop
-            if stop_event and stop_event.is_set():
-                break
-                
-            try:
-                if window and window['-TIMER-']:
-                    window['-TIMER-'].update(f'Refreshing in: {countdown}')
-                countdown -= 1
-                if countdown < 0:
-                    countdown = 60  # Reset to 60 seconds
-                time.sleep(1)
-            except Exception as e:
-                # Window might be closed or element not found
-                break
-    
+        while not (stop_event and stop_event.is_set()):
+            countdown = 60
+            while countdown >= 0 and not (stop_event and stop_event.is_set()):
+                try:
+                    if window and window['-TIMER-']:
+                        window['-TIMER-'].update(f"Refreshing in: {countdown}")
+                    # Wait 1 second but exit early if stop_event is set
+                    if stop_event and stop_event.wait(1):
+                        return
+                    countdown -= 1
+                except Exception:
+                    return
+            # Once countdown finishes, it restarts at 60 automatically
+            
     # Start timer update thread
     timer_thread = threading.Thread(target=update_timer, daemon=True)
     timer_thread.start()
@@ -187,8 +182,7 @@ def api_request_cmc(api_key, currency_choice, progress_callback=None, api_choice
         headings, data = tbl.read_csv(filepath)
         
         if progress_callback:
-            progress_callback(100, "Complete!")
-        threading.Thread(target=start_price_monitoring, args=(api_key, api_choice, currency_choice, coin_id, filepath), daemon=True).start()            
+            progress_callback(100, "Complete!")   
         return headings, data, filepath
 
     except (ConnectionError, Timeout, TooManyRedirects) as e:
@@ -277,6 +271,7 @@ def api_request_cg(api_key, currency_choice, progress_callback=None, api_choice 
             progress_callback(50, "Evaluating cryptocurrency scores...")
             
         output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+        print('nigga1:' )
         logger.info(f'Fetched {len(output_with_scores)} coins from CoinGecko')
         
         if progress_callback:
@@ -289,8 +284,7 @@ def api_request_cg(api_key, currency_choice, progress_callback=None, api_choice 
         headings, data = tbl.read_csv(filepath)
         
         if progress_callback:
-            progress_callback(100, "Complete!")
-        threading.Thread(target=start_price_monitoring, args=(api_key, api_choice, currency_choice, coin_id, filepath), daemon=True).start()           
+            progress_callback(100, "Complete!")      
         return headings, data, filepath
 
     except requests.RequestException as e:
@@ -341,11 +335,11 @@ def search_cmc(api_key, search_query, currency_choice):
             ranking = coin['cmc_rank']
             name = coin['name']
             symbol = coin['symbol']
-            price = f'{coin['quote'][currency_choice]['price']:,.2f}'
-            volume_1h = f'{coin['quote'][currency_choice]['percent_change_1h']:,.2f}'
-            volume_24h = f'{coin['quote'][currency_choice]['percent_change_24h']:,.2f}'
-            volume_7d = f'{coin['quote'][currency_choice]['percent_change_7d']:,.2f}'
-            market_cap = f'{coin['quote'][currency_choice]['market_cap']:,.2f}'
+            price = format_price_15_chars(coin['quote'][currency_choice]['price'])
+            volume_1h = coin['quote'][currency_choice]['percent_change_1h']
+            volume_24h = coin['quote'][currency_choice]['percent_change_24h']
+            volume_7d = coin['quote'][currency_choice]['percent_change_7d']
+            market_cap = coin['quote'][currency_choice]['market_cap']
 
             # Metadata
             coin_id = coin['id']
@@ -375,10 +369,10 @@ def search_cmc(api_key, search_query, currency_choice):
                 '#': ranking,
                 'Name': name,
                 'Current Price': price,
-                '1h%': volume_1h,
-                '24h%': volume_24h,
-                '7d%': volume_7d,
-                'Market Cap': market_cap,
+                '1h%': f"{volume_1h:,.2f}",
+                '24h%': f"{volume_24h:,.2f}",
+                '7d%': f"{volume_7d:,.2f}",
+                'Market Cap': f"{float(market_cap):,.2f}",
                 'Logo': logo,
                 'Symbol': symbol,
                 'Description': description,
@@ -750,7 +744,7 @@ def monitor_price_change(api_key, api_choice, currency_choice, coin_id, filepath
             sg.popup("No CoinGecko API key found. Please save it in settings.cfg.")
             return None, None, None
         url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
-        rate_limit_delay = 2  # 60 seconds / 30 requests = 2 seconds per request
+        rate_limit_delay = 5  # 60 seconds / 30 requests = 2 seconds per request
 
     while True:
         try:
@@ -762,7 +756,7 @@ def monitor_price_change(api_key, api_choice, currency_choice, coin_id, filepath
                 response = session.get(url, params=params)
             else:
                 params = {'x_cg_demo_api_key': cg_api_key}
-                response = make_coingecko_request(url, params)
+                response = make_coingecko_request(cg_coin_url, params)
 
             response.raise_for_status()
             data = response.json()
@@ -803,7 +797,6 @@ def monitor_price_change(api_key, api_choice, currency_choice, coin_id, filepath
 
         except (ConnectionError, Timeout, TooManyRedirects, requests.RequestException) as e:
             logger.error(f"Price check failed: {e}")
-            sg.popup(f"Price check failed: {e}")
             time.sleep(check_interval)  # Wait before retrying
             continue
         except Exception as e:

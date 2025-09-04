@@ -77,11 +77,7 @@ descriptions = {
     "The token's smart contract has undergone one or more independent third-party audits, with no critical vulnerabilities found. This adds a significant layer of security and demonstrates a commitment to best practices.",
     # Not Checked
     "The smart contract may have had internal reviews or partial audits, but lacks comprehensive third-party verification. While not inherently insecure, the absence of a full audit is a concern that should be weighed."
-  ),
-
-
-
-
+  )
 }
 
 main_descriptions = {
@@ -111,6 +107,43 @@ main_descriptions = {
         "Please try again later or review the coin's fundamentals manually."
     )
 }
+
+binary_score_assessment = {
+    (0, 0, 0, 0, 0): "This cryptocurrency project fails all critical assessment criteria. It lacks transparency, has no visible community engagement, no roadmap or whitepaper, lacks legal compliance, and offers no security audit. High risk; avoid investing.",
+    (1, 0, 0, 0, 0): "While the development team is transparent, the project lacks community presence, documentation, legal compliance, and auditing. The foundation is weak despite visible developers.",
+    (0, 1, 0, 0, 0): "The project has some community presence but lacks a transparent team, documentation, legal standing, and security audit. This may indicate a hype-driven but risky coin.",    
+    (0, 0, 1, 0, 0): "A whitepaper or roadmap is available, but without a transparent team, community engagement, compliance, or auditing, the credibility remains low.",    
+    (0, 0, 0, 1, 0): "Regulatory compliance is claimed, which is a positive sign, but the lack of transparency, documentation, and auditing presents a significant risk.",    
+    (0, 0, 0, 0, 1): "The project has a smart contract audit, indicating some security, but lacks all other critical elements, including team transparency and legal compliance.",    
+    (1, 1, 0, 0, 0): "The team is transparent and active in the community, but without a roadmap, compliance, or audit, the project's direction and safety remain unclear.",    
+    (1, 0, 1, 0, 0): "With a transparent team and a roadmap, the project shows some planning, but the lack of community, legal standing, and audits signals caution.",    
+    (1, 0, 0, 1, 0): "Transparency and legal compliance are positives, but the lack of community, documentation, and auditing suggests incomplete due diligence.",    
+    (1, 0, 0, 0, 1): "A transparent team and audited contracts suggest internal diligence, but external validation and legal compliance are lacking.",    
+    (0, 1, 1, 0, 0): "Community presence and a roadmap are encouraging, but without a visible team or audit, the project may lack long-term viability.",    
+    (0, 1, 0, 1, 0): "Regulatory compliance and community engagement exist, but absent documentation and transparency are serious concerns.",    
+    (0, 1, 0, 0, 1): "Security audit and community engagement are good signs, but the opaque team and lack of documentation create uncertainty.",   
+    (0, 0, 1, 1, 0): "The project has documentation and claims legal compliance, but lacks community, transparency, and security validation.", 
+    (0, 0, 1, 0, 1): "The roadmap and security audit are in place, but legal and team-related concerns could undermine trust.", 
+    (0, 0, 0, 1, 1): "Regulatory compliance and smart contract auditing are strong points, but with no visible team, community, or roadmap, it's incomplete.",    
+    (1, 1, 1, 0, 0): "The project is strong on transparency, community, and planning, but needs legal compliance and security auditing for full credibility.",    
+    (1, 1, 0, 1, 0): "Transparency, community, and legal compliance exist, but technical documentation and security auditing are missing.",    
+    (1, 1, 0, 0, 1): "The team is visible, community engaged, and auditing is done. Legal compliance and a roadmap are gaps to address.",   
+    (1, 0, 1, 1, 0): "Transparency, documentation, and compliance are in place, but without community and audit, investor confidence may be limited.",   
+    (1, 0, 1, 0, 1): "The project has a roadmap, a transparent team, and has been audited, but lacks legal clarity and community support.",   
+    (1, 0, 0, 1, 1): "The team is visible, auditing and compliance are confirmed, yet no documentation or community presence limits appeal.",   
+    (0, 1, 1, 1, 0): "Community, roadmap, and legal compliance suggest some promise, but an anonymous team and no audit remain problematic.",  
+    (0, 1, 1, 0, 1): "Community, documentation, and auditing are good, but the opaque team and unclear legal standing warrant caution.",  
+    (0, 1, 0, 1, 1): "Community engagement, compliance, and security auditing are strong, but the project lacks transparency and planning.",  
+    (0, 0, 1, 1, 1): "Documentation, compliance, and auditing provide a technical base, but with no visible team or community, trust is limited.", 
+    (1, 1, 1, 1, 0): "The project is strong in every area except security auditing. While mostly credible, this audit gap could pose risk.",  
+    (1, 1, 1, 0, 1): "The project is well-developed with strong team, community, and technical security. Legal compliance is the only missing link.",  
+    (1, 1, 0, 1, 1): "All areas except documentation are solid. A whitepaper or roadmap would improve trust further.",  
+    (1, 0, 1, 1, 1): "Transparent, with a solid roadmap, legal compliance, and security audit. Community engagement is the only missing piece.", 
+    (0, 1, 1, 1, 1): "The project has strong community, documentation, legal compliance, and audit. A transparent team would complete the picture.",  
+    (1, 1, 1, 1, 1): "This cryptocurrency excels in all assessment criteria—transparent team, vibrant community, strong documentation, full compliance, and secure smart contracts. Highly trustworthy and low risk.",
+}
+
+
 
 def get_main_desc(score):
     int_score = int(score)
@@ -150,3 +183,9 @@ def get_category_desc(category, score):
             desc_index = 3  # Default to High Risk if invalid score
 
     return category_info[0], category_info[desc_index]  # title, description
+
+def get_descriptive_info(lst):
+    try:
+        return binary_score_assessment[tuple(map(int, lst))]
+    except KeyError:
+        return "Invalid criteria combination."

@@ -1,8 +1,9 @@
 import FreeSimpleGUI as sg
 from . import get_images as img
 from . import plot_graphs as plg
-from .oas_screen import generate_oas_window
-from .ss_screen import generate_subscr_window
+from . import table as tbl
+from .oas_screen  import generate_oas_window
+from .ss_screen   import generate_subscr_window
 from .plot_graphs import pie_charts
 
 def update_score_window(window, data):
@@ -58,19 +59,19 @@ def update_risk_window(main_window, selected_coin, currency_choice):
     
     # Update Numerical Scores (update score and warning image/message)
     v_img, v_msg = get_warning_image(int(selected_coin[13])*10, 'volatility')
-    main_window['-VOLATILITY-'].update(selected_coin[13])
+    main_window['-VOLATILITY-'].update(f' {selected_coin[13]}')
     main_window['-V-WIMG-'].update(filename=v_img)
     main_window['-V-WMSG-'].update(v_msg)
     l_img, l_msg = get_warning_image(int(selected_coin[14])*10, 'liquidity')
-    main_window['-LIQUIDITY-'].update(selected_coin[14])
+    main_window['-LIQUIDITY-'].update(f' {selected_coin[14]}')
     main_window['-L-WIMG-'].update(filename=l_img)
     main_window['-L-WMSG-'].update(l_msg)
     e_img, e_msg = get_warning_image(int(selected_coin[15])*10, 'exchange')
-    main_window['-EXCHANGE-'].update(selected_coin[15])
+    main_window['-EXCHANGE-'].update(f' {selected_coin[15]}')
     main_window['-E-WIMG-'].update(filename=e_img)
     main_window['-E-WMSG-'].update(e_msg)
     a_img, a_msg = get_warning_image(int(selected_coin[16])*10, 'anomaly')
-    main_window['-ANOMALY-'].update(selected_coin[16])
+    main_window['-ANOMALY-'].update(f' {selected_coin[16]}')
     main_window['-A-WIMG-'].update(filename=a_img)
     main_window['-A-WMSG-'].update(a_msg)
 
@@ -119,11 +120,18 @@ def get_warning_image(total_score, mode):
 
     return warning_image, warning_message
 
-def main_score_window(chart_data):
+def main_score_window(chart_data, current_row, selected_coin, data):
+    current_coin = selected_coin[1]
+    # Extract the top 5 entries from the main csv
+    list_oas = tbl.get_oas_list(data) # based on OAS (descending)
+    list_24h = tbl.get_vol_list(data) # based on 24h vol (descending)
+    
+    oas_table = tbl.generate_oas_table(list_oas) # list_oas
+    vol_table = tbl.generate_vol_table(list_24h) # list_24h
     # store the window first to render the graph for this window
     window = sg.Window(
         "Assessment Score Guide",
-        generate_oas_window(),
+        generate_oas_window(current_row, oas_table, vol_table, current_coin),
         modal=True,
         keep_on_top=True,
         finalize=True,
@@ -353,10 +361,11 @@ def render_upper_content(data):
 def render_lower_content(data):
     sc_text = "#ffffff"
     title_size = (28, 2)
-    score_font = ("Segoe UI", 28)
+    score_font = ("Segoe UI", 48)
     title_font = ("Segoe UI", 13, 'bold')
     logo_pad = ((0, 20), (0, 0))
-    score_size = (2, 1)
+    score_size = (5, 1)
+    label_size = (25, 1)
     rv_bg     = "#ef476f"
     ol_bg     = '#ffd166'
     el_bg     = '#06d6a0'
@@ -368,13 +377,12 @@ def render_lower_content(data):
             sg.Text('REALIZED VOLATILITY', font=title_font, pad=((12, 0), (10, 0)), background_color=rv_bg, size=title_size, key='-CATEGORY0-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(data[0][13], font=score_font, pad=((20, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=sc_text, key='-VOLATILITY-', enable_events=True),
-            sg.Push(background_color=rv_bg),
+            sg.Text(f' {data[0][13]}', font=score_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=sc_text, key='-VOLATILITY-', enable_events=True),
             sg.Image(filename='app/assets/images/volatility.png', pad=logo_pad, background_color=rv_bg, key='-RV-IMAGE-', enable_events=True)    
         ],
         [   
             sg.Image(filename='app/assets/images/v-good.png', pad=((10, 0), (10, 0)), key='-V-WIMG-', enable_events=True),
-            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=rv_bg, text_color=sc_text, key='-V-WMSG-', enable_events=True)
+            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=rv_bg, text_color=sc_text, key='-V-WMSG-', enable_events=True, size=label_size)
         ]
     ]
     
@@ -383,13 +391,12 @@ def render_lower_content(data):
             sg.Text('LIQUIDITY AND ORDER BOOK DEPTH', font=title_font, pad=((12, 0), (10, 0)), background_color=ol_bg, size=title_size, key='-CATEGORY1-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(data[0][14], font=score_font, pad=((20, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=sc_text, key='-LIQUIDITY-', enable_events=True),
-            sg.Push(background_color=ol_bg),
+            sg.Text(f' {data[0][14]}', font=score_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=sc_text, key='-LIQUIDITY-', enable_events=True),
             sg.Image(filename='app/assets/images/liquidity.png', pad=logo_pad, background_color=ol_bg, key='-OL-IMAGE-', enable_events=True)    
         ],
         [   
             sg.Image(filename='app/assets/images/l-good.png', pad=((10, 0), (10, 0)), key='-L-WIMG-', enable_events=True),
-            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=ol_bg, text_color=sc_text, key='-L-WMSG-', enable_events=True)
+            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=ol_bg, text_color=sc_text, key='-L-WMSG-', enable_events=True, size=label_size)
         ]
     ]
     
@@ -398,13 +405,12 @@ def render_lower_content(data):
             sg.Text('EXCHANGE LISTINGS AND REPUTATION', font=title_font, pad=((12, 0), (10, 0)), background_color=el_bg, size=title_size, key='-CATEGORY2-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(data[0][15], font=score_font, pad=((20, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=sc_text, key='-EXCHANGE-', enable_events=True),
-            sg.Push(background_color=el_bg),
+            sg.Text(f' {data[0][15]}', font=score_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=sc_text, key='-EXCHANGE-', enable_events=True),
             sg.Image(filename='app/assets/images/exchange.png', pad=logo_pad, background_color=el_bg, key='-EL-IMAGE-', enable_events=True)    
         ],
         [   
             sg.Image(filename='app/assets/images/e-good.png', pad=((10, 0), (10, 0)), key='-E-WIMG-', enable_events=True),
-            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=el_bg, text_color=sc_text, key='-E-WMSG-', enable_events=True)
+            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=el_bg, text_color=sc_text, key='-E-WMSG-', enable_events=True, size=label_size)
         ]
     ]
     
@@ -413,13 +419,12 @@ def render_lower_content(data):
             sg.Text('TRANSACTION PATTERNS AND ANOMALIES', font=title_font, pad=((12, 0), (10, 0)), background_color=am_bg, size=title_size, key='-CATEGORY3-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(data[0][16], font=score_font, pad=((20, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=sc_text, key='-ANOMALY-', enable_events=True),
-            sg.Push(background_color=am_bg),
+            sg.Text(f' {data[0][16]}', font=score_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=sc_text, key='-ANOMALY-', enable_events=True),
             sg.Image(filename='app/assets/images/anomaly.png', pad=logo_pad, background_color=am_bg, key='-AP-IMAGE-', enable_events=True)    
         ],
         [   
             sg.Image(filename='app/assets/images/a-good.png', pad=((10, 0), (10, 0)), key='-A-WIMG-', enable_events=True),
-            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=am_bg, text_color=sc_text, key='-A-WMSG-', enable_events=True)
+            sg.Text('Low Risk', font=("Arial", 12, 'bold'), pad=((10, 0), (10, 0)), background_color=am_bg, text_color=sc_text, key='-A-WMSG-', enable_events=True, size=label_size)
         ]
     ]  
     numerical_size = (290, 200)

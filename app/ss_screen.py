@@ -3,7 +3,7 @@ from .score_dict import get_category_desc
 
 def generate_subscr_window(category, score):
     HEADER_CATEGORY_FONT = ("Helvetica", 20, 'bold')
-    BODY_FONT     = ("Segoe UI", 14) 
+    BODY_FONT            = ("Segoe UI", 14) 
 
     title, desc = get_category_desc(category, score)
 

@@ -66,7 +66,7 @@ def gen_result_box(row, i):
             sg.Text(row[0], size=(4, 1), font=HEADER_FONT, pad=((0, 5), (0, 0)), key=f'-rank{row[0]}-', enable_events=True),
             sg.Image(get_image(row[7], 1), pad=((5, 0), (0, 0)), key=f'-icon{row[0]}-', enable_events=True),  # icon
             name_col,
-            sg.Text(row[2], size=(12, 1), font=HEADER_FONT, pad=((0, 0), (0, 0)),key=f'-price{row[0]}-', enable_events=True),   # price
+            sg.Text(f"{float(row[2]):.5f}", size=(12, 1), font=HEADER_FONT, pad=((0, 0), (0, 0)),key=f'-price{row[0]}-', enable_events=True),   # price
             sg.Text(row[6], size=(15, 1), font=HEADER_FONT, pad=((0, 0), (0, 0)), key=f'-mcap{row[0]}-', enable_events=True)    # market‑cap
         ]]
     )

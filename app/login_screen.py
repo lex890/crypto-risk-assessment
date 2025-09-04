@@ -269,6 +269,17 @@ def generate_login_window(api_choice):
             sg.Button('Confirm', size=(10, 1), pad=((8, 0), (0, 0)), font=('Gotham', 10, 'bold'), border_width=0, button_color=("#E8F9FD", '#59CE8F')),
             sg.Push()
         ],
+        [
+            sg.Checkbox('Auto-update on Price change', pad=((190, 0), (0, 0)), key='-TOGGLE-UPDATE-', visible=False),
+            sg.Push(),
+        ],
+        [
+            sg.Combo(['60', '120', '300', '600'], default_value='60', pad=((195, 0), (0, 0)), key='-SECONDS-', visible=False),
+            sg.Text('Seconds', visible=False),
+            sg.Push(),
+        ],
+        
+
         [sg.VPush()],
         [
             sg.Column(lower_msg_box, pad=((10, 0), (40, 0))),
@@ -289,7 +300,8 @@ def run_app():
     setup_hover_effects(login_window)
     while True:
         lw_event, lw_values = login_window.read()
-
+        check_box_val = login_window['-TOGGLE-UPDATE-'].get()
+        seconds_val = login_window['-SECONDS-'].get()
         if lw_event in (sg.WIN_CLOSED, 'Exit'):
             break
         elif lw_event == '-CRYPTO-LOGO-TOGGLE-':

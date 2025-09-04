@@ -776,3 +776,646 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~~~^^^
 RuntimeError: Calling Tcl from different apartment
 
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 593, in main_window_handler
+    rsk.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 79, in update_risk_window
+    main_window['-DT-CHECK-'].update(filename=get_binary(selected_coin[17]))
+                                              ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 38, in get_binary
+    value = int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+
+Date      : 2025-08-07 01:00:37
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 593, in main_window_handler
+    rsk.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 79, in update_risk_window
+    main_window['-DT-CHECK-'].update(filename=get_binary(selected_coin[17]))
+                                              ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 38, in get_binary
+    value = int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 593, in main_window_handler
+    rsk.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 79, in update_risk_window
+    main_window['-DT-CHECK-'].update(filename=get_binary(selected_coin[17]))
+                                              ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 38, in get_binary
+    value = int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+
+Date      : 2025-08-07 01:50:10
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 593, in main_window_handler
+    rsk.update_risk_window(main_window, selected_coin, currency_choice)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 79, in update_risk_window
+    main_window['-DT-CHECK-'].update(filename=get_binary(selected_coin[17]))
+                                              ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\risk_assessment.py", line 38, in get_binary
+    value = int(value)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 534, in fetch_next_cryptocurrencies
+    return fetch_cg_next_cryptocurrencies(offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 715, in fetch_cg_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 797, in evaluate_cryptos
+    score_social = 1 if crypto_name == 'Bitcoin' or crypto_name == 'Ethereum' else get_sentiment_score(symbol)
+                                                                                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 155, in get_sentiment_score
+    avg_score = sum(scores) / len(scores)
+                ~~~~~~~~~~~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 493, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 537, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-08-07 13:38:55
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 534, in fetch_next_cryptocurrencies
+    return fetch_cg_next_cryptocurrencies(offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 715, in fetch_cg_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 797, in evaluate_cryptos
+    score_social = 1 if crypto_name == 'Bitcoin' or crypto_name == 'Ethereum' else get_sentiment_score(symbol)
+                                                                                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 155, in get_sentiment_score
+    avg_score = sum(scores) / len(scores)
+                ~~~~~~~~~~~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 493, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 537, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+## Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 534, in fetch_next_cryptocurrencies
+    return fetch_cg_next_cryptocurrencies(offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 715, in fetch_cg_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 797, in evaluate_cryptos
+    score_social = 1 if crypto_name == 'Bitcoin' or crypto_name == 'Ethereum' else get_sentiment_score(symbol)
+                                                                                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 155, in get_sentiment_score
+    avg_score = sum(scores) / len(scores)
+                ~~~~~~~~~~~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 493, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 537, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-08-07 13:52:19
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 534, in fetch_next_cryptocurrencies
+    return fetch_cg_next_cryptocurrencies(offset, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 715, in fetch_cg_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 797, in evaluate_cryptos
+    score_social = 1 if crypto_name == 'Bitcoin' or crypto_name == 'Ethereum' else get_sentiment_score(symbol)
+                                                                                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 155, in get_sentiment_score
+    avg_score = sum(scores) / len(scores)
+                ~~~~~~~~~~~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 493, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\cursor projects\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 537, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+## Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 526, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 621, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 824, in evaluate_cryptos
+    score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 688, in score_exchange_listings
+    response = make_coingecko_request(url)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 121, in make_coingecko_request
+    raise Exception(f"Failed to fetch {url} after {retries} attempts")
+Exception: Failed to fetch https://api.coingecko.com/api/v3/coins/hedera-hashgraph/tickers after 3 attempts
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 531, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-08-09 16:13:49
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 526, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 621, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 824, in evaluate_cryptos
+    score_exchange = 10 if crypto_name == 'Bitcoin' else score_exchange_listings(symbol)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 688, in score_exchange_listings
+    response = make_coingecko_request(url)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 121, in make_coingecko_request
+    raise Exception(f"Failed to fetch {url} after {retries} attempts")
+Exception: Failed to fetch https://api.coingecko.com/api/v3/coins/hedera-hashgraph/tickers after 3 attempts
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 531, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+## Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 709, in score_market_cap_liquidity
+    api_volume_24h_pct = data.get('market_data', {}).get('price_change_percentage_24h', 0) / 100
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 527, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 622, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 1084, in evaluate_cryptos
+    score_liquidity =  score_market_cap_liquidity(symbol, current_price, volume_24h)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 805, in score_market_cap_liquidity
+    logger.debug(f"Data snapshot: current_price={current_price}, volume_24h={volume_24h}, prices={prices}")
+                                                                                                  ^^^^^^
+UnboundLocalError: cannot access local variable 'prices' where it is not associated with a value
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 532, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-08-09 21:44:07
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 709, in score_market_cap_liquidity
+    api_volume_24h_pct = data.get('market_data', {}).get('price_change_percentage_24h', 0) / 100
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 527, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 622, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 1084, in evaluate_cryptos
+    score_liquidity =  score_market_cap_liquidity(symbol, current_price, volume_24h)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 805, in score_market_cap_liquidity
+    logger.debug(f"Data snapshot: current_price={current_price}, volume_24h={volume_24h}, prices={prices}")
+                                                                                                  ^^^^^^
+UnboundLocalError: cannot access local variable 'prices' where it is not associated with a value
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 532, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+## Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 709, in score_market_cap_liquidity
+    api_volume_24h_pct = data.get('market_data', {}).get('price_change_percentage_24h', 0) / 100
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 527, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 622, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 1084, in evaluate_cryptos
+    score_liquidity =  score_market_cap_liquidity(symbol, current_price, volume_24h)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 805, in score_market_cap_liquidity
+    logger.debug(f"Data snapshot: current_price={current_price}, volume_24h={volume_24h}, prices={prices}")
+                                                                                                  ^^^^^^
+UnboundLocalError: cannot access local variable 'prices' where it is not associated with a value
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 532, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+
+Date      : 2025-08-09 21:47:16
+User      : automated report
+Email     : main.exe
+Type      : Other
+---
+Error:
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 709, in score_market_cap_liquidity
+    api_volume_24h_pct = data.get('market_data', {}).get('price_change_percentage_24h', 0) / 100
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 527, in fetch_next_cryptocurrencies
+    return fetch_cmc_next_cryptocurrencies(api_key, offset, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 622, in fetch_cmc_next_cryptocurrencies
+    output_with_scores = sch.evaluate_cryptos(output, currency_choice, progress_callback)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 1084, in evaluate_cryptos
+    score_liquidity =  score_market_cap_liquidity(symbol, current_price, volume_24h)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\score_handler.py", line 805, in score_market_cap_liquidity
+    logger.debug(f"Data snapshot: current_price={current_price}, volume_24h={volume_24h}, prices={prices}")
+                                                                                                  ^^^^^^
+UnboundLocalError: cannot access local variable 'prices' where it is not associated with a value
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\main_screen.py", line 403, in main_window_handler
+    new_data = lod.next_screen_loading(data, api_key, api_choice, currency_choice)
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 205, in next_screen_loading
+    raise result_holder['error']
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\loading.py", line 171, in target
+    result_holder['new_data'] = req.fetch_next_cryptocurrencies(
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        len(data),
+        ^^^^^^^^^^
+    ...<3 lines>...
+        progress_callback=update_progress
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "e:\VS Code\cryptocurrency-investment-risk-assessment-tool\app\request_api.py", line 532, in fetch_next_cryptocurrencies
+    sg.popup(f"Error fetching next cryptocurrencies: {e}")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 9786, in popup
+    button, values = window.read()
+                     ~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 959, in read
+    results = self._read(timeout=timeout, timeout_key=timeout_key)
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 1038, in _read
+    self._Show()
+    ~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\window.py", line 762, in _Show
+    StartupTK(self)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\site-packages\FreeSimpleGUI\__init__.py", line 7100, in StartupTK
+    window.TKroot.mainloop()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Lex\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+RuntimeError: Calling Tcl from different apartment
+

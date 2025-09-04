@@ -104,7 +104,7 @@ def get_score_category(value, scale=100):
 
 # Create the pie chart figure
 def create_pie_chart(score_data, figsize=(3, 3)):
-    get_score = int(score_data)
+    get_score = int(float(score_data))
     print('get_score', get_score)
     value = min(get_score, 100)
     fontsize_category = 13

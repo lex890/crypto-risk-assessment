@@ -1,0 +1,155 @@
+2025-08-11 16:30:46,327 - INFO - === SANITY TEST START ===
+2025-08-11 16:30:46,327 - INFO - BTC mapped to CoinGecko ID: bitcoin
+
+Volume data for 'bitcoin' over the last 7 days:
+2025-08-11 16:30:47,005 - INFO - 
+=== Trading Volume Consistency Scores ===
+2025-08-11 16:30:47,005 - INFO - Mean Volume: 35,498,996,314.54
+2025-08-11 16:30:47,005 - INFO - Standard Deviation: 5,524,781,008.18
+2025-08-11 16:30:47,005 - INFO - Coefficient of Variation (CV): 0.1556
+2025-08-11 16:30:47,006 - INFO - VSI  (Stability Score)........: 9.25 / 10
+2025-08-11 16:30:47,006 - INFO - VSI2 (Spike Score)............: 10.0 / 10
+2025-08-11 16:30:47,006 - INFO - [RESULT] Final Trading Volume Score: 9.62/10
+2025-08-11 16:30:47,006 - INFO - Trading Volume Consistency (BTC): {'vsi': 9.25, 'vsi2': 10.0, 'final_score': 9.62}
+Retrieved 31 price points for bitcoin.
+2025-08-11 16:30:47,434 - INFO - Volatility Score (BTC): 10
+2025-08-11 16:30:47,434 - INFO - ETH mapped to CoinGecko ID: ethereum
+
+Volume data for 'ethereum' over the last 7 days:
+2025-08-11 16:30:47,881 - INFO -
+=== Trading Volume Consistency Scores ===
+2025-08-11 16:30:47,881 - INFO - Mean Volume: 30,619,551,813.13
+2025-08-11 16:30:47,881 - INFO - Standard Deviation: 5,101,386,608.33
+2025-08-11 16:30:47,881 - INFO - Coefficient of Variation (CV): 0.1666
+2025-08-11 16:30:47,881 - INFO - VSI  (Stability Score)........: 9.2 / 10
+2025-08-11 16:30:47,882 - INFO - VSI2 (Spike Score)............: 10.0 / 10
+2025-08-11 16:30:47,882 - INFO - [RESULT] Final Trading Volume Score: 9.6/10
+2025-08-11 16:30:47,882 - INFO - Trading Volume Consistency (ETH): {'vsi': 9.2, 'vsi2': 10.0, 'final_score': 9.6}
+Retrieved 31 price points for ethereum.
+2025-08-11 16:30:48,341 - INFO - Volatility Score (ETH): 6
+2025-08-11 16:30:48,341 - INFO - ADA mapped to CoinGecko ID: cardano
+
+Volume data for 'cardano' over the last 7 days:
+2025-08-11 16:30:48,781 - INFO -
+=== Trading Volume Consistency Scores ===
+2025-08-11 16:30:48,782 - INFO - Mean Volume: 1,169,655,395.05
+2025-08-11 16:30:48,782 - INFO - Standard Deviation: 201,046,746.51
+2025-08-11 16:30:48,783 - INFO - Coefficient of Variation (CV): 0.1719
+2025-08-11 16:30:48,783 - INFO - VSI  (Stability Score)........: 9.18 / 10
+2025-08-11 16:30:48,783 - INFO - VSI2 (Spike Score)............: 10.0 / 10
+2025-08-11 16:30:48,784 - INFO - [RESULT] Final Trading Volume Score: 9.59/10
+2025-08-11 16:30:48,784 - INFO - Trading Volume Consistency (ADA): {'vsi': 9.18, 'vsi2': 10.0, 'final_score': 9.59}
+Retrieved 31 price points for cardano.
+2025-08-11 16:30:49,258 - INFO - Volatility Score (ADA): 6
+this is inside evaluate_cryptos:  [{'#': 1, 'Name': 'Bitcoin', 'Current Price': '     121,690.44', '1h%': '-0.17', '24h%': '3.03', '7d%': '6.30', 'Market Cap': '2,422,219,929,153.73', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png', 'Symbol': 'BTC', 'Description': 'Bitcoin (BTC) is a cryptocurrency launched in 2010. Users are able to generate BTC through the process of mining. Bitcoin has a current supply of 19,904,768. The last known price of Bitcoin is 121,597.17892505 USD and is up 2.95 over the last 24 hours. It is currently trading on 12280 active market(s) with $76,351,327,018.62 traded over the last 24 hours. More information can be found at https://bitcoin.org/.', 'Creation Date': '2010-07-13', 'Website': 'https://bitcoin.org/', 'Source Code': 'https://github.com/bitcoin/bitcoin'}, {'#': 2, 'Name': 'Ethereum', 'Current Price': '       4,275.60', '1h%': '-0.35', '24h%': '1.68', '7d%': '20.47', 'Market Cap': '516,103,186,496.09', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png', 'Symbol': 'ETH', 'Description': 'Ethereum (ETH) is a cryptocurrency . Ethereum has a current supply of 120,708,931.03940783. The last known price of Ethereum is 4,278.13632023 USD and is up 1.93 over the last 24 hours. It is currently trading on 10435 active market(s) with $34,636,057,282.13 traded over the last 24 hours. More information can be found at https://www.ethereum.org/.', 'Creation Date': '2015-08-07', 'Website': 'https://www.ethereum.org/', 'Source Code': 'https://github.com/ethereum/go-ethereum'}, {'#': 3, 'Name': 'XRP', 'Current Price': ' 3.305473900444', '1h%': '1.14', '24h%': '3.65', '7d%': '9.87', 'Market Cap': '196,042,321,752.56', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png', 'Symbol': 'XRP', 'Description': 'XRP (XRP) is a cryptocurrency . XRP has a current supply of 99,985,880,506 with 59,308,385,925 in circulation. The last known price of XRP is 3.26595589 USD and is up 2.65 over the last 24 hours. It is currently trading on 1673 active market(s) with $5,718,718,821.79 traded over the last 24 hours. More information can be found at https://xrpl.org/.', 'Creation Date': '2013-08-04', 'Website': 'https://xrpl.org/', 'Source Code': 'https://github.com/ripple/rippled'}, {'#': 4, 'Name': 'Tether USDt', 'Current Price': ' 0.999832429020', '1h%': '-0.01', '24h%': '-0.03', '7d%': '-0.02', 'Market Cap': '164,507,845,530.84', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png', 'Symbol': 'USDT', 'Description': 'Tether USDt (USDT) is a cryptocurrency and operates on the Ethereum platform. Tether USDt has a current supply of 167,783,241,643.79987224 with 164,535,416,891.97961889 in circulation. The last known price of Tether USDt is 0.99988671 USD and is down -0.01 over the last 24 hours. It is currently trading on 140833 active market(s) with $119,951,131,231.59 traded over the last 24 hours. More information can be found at https://tether.to.', 'Creation Date': '2015-02-25', 'Website': 'https://tether.to', 'Source Code': 'N/A'}, {'#': 5, 'Name': 'BNB', 'Current Price': '         813.65', '1h%': '-0.48', '24h%': '1.52', '7d%': '7.40', 'Market Cap': '113,332,163,608.62', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png', 'Symbol': 'BNB', 'Description': 'BNB (BNB) is a cryptocurrency . BNB has a current supply of 139,287,952.92000002. The last known price of BNB is 812.65314966 USD and is up 1.69 over the last 24 hours. It is currently trading on 2660 active market(s) with $2,276,064,678.21 traded over the last 24 hours. More information can be found at https://bnbchain.org/en.', 'Creation Date': '2017-07-25', 'Website': 'https://bnbchain.org/en', 'Source Code': 'https://github.com/bnb-chain'}, {'#': 6, 'Name': 'Solana', 'Current Price': '         183.44', '1h%': '-0.25', '24h%': '2.20', '7d%': '12.33', 'Market Cap': '98,974,156,926.35', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png', 'Symbol': 'SOL', 'Description': 'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 607,187,650.4817251 with 539,542,447.8850287 in circulation. The last known price of Solana is 183.2143501 USD and is up 2.26 over the last 24 hours. It is currently trading on 967 active market(s) with $6,099,060,184.37 traded over the last 24 hours. More information can be found at https://solana.com.', 'Creation Date': '2020-04-10', 'Website': 'https://solana.com', 'Source Code': 'https://github.com/solana-labs'}, {'#': 7, 'Name': 'USDC', 'Current Price': ' 0.999789864788', '1h%': '-0.01', '24h%': '-0.02', '7d%': '-0.00', 'Market Cap': '65,136,362,281.67', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png', 'Symbol': 'USDC', 'Description': 'USDC (USDC) is a cryptocurrency launched in 2024and operates on the Ethereum platform. USDC has a current supply of 65,150,052,601.81119486. The last known price of USDC is 0.99983914 USD and is up -0.00 over the last 24 hours. It is currently trading on 30405 active market(s) with $13,851,979,697.61 traded over the last 24 hours. More information can be found at https://www.circle.com/en/usdc.', 'Creation Date': '2018-10-08', 'Website': 'https://www.circle.com/en/usdc', 'Source Code': 'https://github.com/centrehq/centre-tokens'}, {'#': 8, 'Name': 'Dogecoin', 'Current Price': ' 0.234951708757', '1h%': '-0.47', '24h%': '0.99', '7d%': '15.89', 'Market Cap': '35,353,396,572.99', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/74.png', 'Symbol': 'DOGE', 'Description': 'Dogecoin (DOGE) is a cryptocurrency . Users are able to generate DOGE through the process of mining. Dogecoin has a current supply of 150,470,906,383.70521. The last known price of Dogecoin is 0.23441349 USD and is up 1.08 over the last 24 hours. It is currently trading on 1270 active market(s) with $2,252,901,108.04 traded over the last 24 hours. More information can be found at http://dogecoin.com/.', 'Creation Date': '2013-12-15', 'Website': 'http://dogecoin.com/', 'Source Code': 'https://github.com/dogecoin/dogecoin'}, {'#': 9, 'Name': 'TRON', 'Current Price': ' 0.340459099058', '1h%': '-0.14', '24h%': '0.33', '7d%': '3.29', 'Market Cap': '32,240,692,722.58', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png', 'Symbol': 'TRX', 'Description': 'TRON (TRX) is a cryptocurrency . TRON has a current supply of 94,697,704,719.505518 with 94,697,697,349.929998 in circulation. The last known price of TRON is 0.34073296 USD and is up 0.71 over the last 24 hours. It is currently trading on 1212 active market(s) with $765,058,417.55 traded over the last 24 hours. More information can be found at https://trondao.org/.', 'Creation Date': '2017-09-13', 'Website': 'https://trondao.org/', 'Source Code': 'https://github.com/tronprotocol/java-tron'}, {'#': 10, 'Name': 'Cardano', 'Current Price': ' 0.815947930739', '1h%': '-0.29', '24h%': '2.70', '7d%': '10.36', 'Market Cap': '28,906,855,795.55', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png', 'Symbol': 'ADA', 'Description': 'Cardano (ADA) is a cryptocurrency launched in 2017. Cardano has a current supply of 44,990,971,191.627284 with 35,427,329,007.833823 in circulation. The last known price of Cardano is 0.81095732 USD and is up 2.33 over the last 24 hours. It is currently trading on 1561 active market(s) with $1,069,039,111.13 traded over the last 24 hours. More information can be found at https://www.cardano.org.', 'Creation Date': '2017-10-01', 'Website': 'https://www.cardano.org', 'Source Code': 'https://cardanoupdates.com/'}]
+2025-08-11 16:31:03,773 - INFO - Retrieved: Bitcoin
+2025-08-11 16:31:05,941 - INFO - Anomaly ratio for BTC: 0.1000
+Retrieved 31 price points for bitcoin.
+2025-08-11 16:31:06,700 - INFO - Liquidity Score for BTC (1-10): 6.7
+2025-08-11 16:31:07,476 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:31:11,708 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:31:20,039 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:31:36,039 - INFO - No GitHub link found for BTC on CoinGecko
+2025-08-11 16:31:36,694 - INFO - Loading sentiment analysis model for the first time...
+WARNING:tensorflow:From C:\Users\necio\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-08-11 16:31:47,832 - WARNING - From C:\Users\necio\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+Device set to use cpu
+2025-08-11 16:31:59,318 - INFO - Retrieved: Ethereum
+2025-08-11 16:32:01,062 - INFO - Anomaly ratio for ETH: 0.0200
+Error: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily
+Not enough data to compute.
+2025-08-11 16:32:01,778 - INFO - Liquidity Score for ETH (1-10): 6.0
+2025-08-11 16:32:02,004 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:32:03,237 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:32:05,527 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:32:16,243 - INFO - Retrieved: XRP
+2025-08-11 16:32:18,064 - INFO - Anomaly ratio for XRP: 0.0200
+Retrieved 31 price points for ripple.
+2025-08-11 16:32:19,031 - INFO - Liquidity Score for XRP (1-10): 2.0
+2025-08-11 16:32:19,334 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:32:20,572 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:32:22,794 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:32:27,008 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:32:35,218 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:32:51,219 - INFO - No GitHub link found for XRP on CoinGecko
+2025-08-11 16:32:57,169 - INFO - Retrieved: Tether USDt
+2025-08-11 16:33:00,488 - INFO - Anomaly ratio for USDT: 0.1000
+Error: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/tether/market_chart?vs_currency=usd&days=30&interval=daily
+Not enough data to compute.
+2025-08-11 16:33:01,300 - INFO - Liquidity Score for USDT (1-10): 9.3
+2025-08-11 16:33:01,500 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:33:02,733 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:33:04,980 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:33:09,199 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:33:17,443 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:33:33,444 - INFO - No GitHub link found for USDT on CoinGecko
+2025-08-11 16:33:39,523 - INFO - Retrieved: BNB
+2025-08-11 16:33:41,640 - INFO - Anomaly ratio for BNB: 0.0400
+Retrieved 31 price points for binancecoin.
+2025-08-11 16:33:42,582 - INFO - Liquidity Score for BNB (1-10): 4.7
+2025-08-11 16:33:44,086 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:34:00,087 - INFO - No GitHub link found for BNB on CoinGecko
+2025-08-11 16:34:05,601 - INFO - Retrieved: Solana
+2025-08-11 16:34:07,599 - INFO - Anomaly ratio for SOL: 0.0200
+Error: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/solana/market_chart?vs_currency=usd&days=30&interval=daily
+Not enough data to compute.
+2025-08-11 16:34:08,476 - INFO - Liquidity Score for SOL (1-10): 4.7
+2025-08-11 16:34:08,827 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:34:10,068 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:34:12,320 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:34:16,565 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:34:24,784 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:34:40,785 - INFO - No GitHub link found for SOL on CoinGecko
+2025-08-11 16:34:46,729 - INFO - Retrieved: USDC
+2025-08-11 16:34:48,850 - INFO - Anomaly ratio for USDC: 0.1000
+Retrieved 31 price points for usd-coin.
+2025-08-11 16:34:49,838 - INFO - Liquidity Score for USDC (1-10): 8.0
+2025-08-11 16:34:51,285 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:35:07,286 - INFO - No GitHub link found for USDC on CoinGecko
+2025-08-11 16:35:12,803 - INFO - Retrieved: Dogecoin
+2025-08-11 16:35:14,965 - INFO - Anomaly ratio for DOGE: 0.0200
+Error: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=30&interval=daily
+Not enough data to compute.
+2025-08-11 16:35:15,669 - INFO - Liquidity Score for DOGE (1-10): 4.0
+2025-08-11 16:35:15,887 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:35:17,126 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:35:19,368 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:35:23,588 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:35:31,807 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:35:47,808 - INFO - No GitHub link found for DOGE on CoinGecko
+2025-08-11 16:35:53,657 - INFO - Retrieved: TRON
+2025-08-11 16:35:55,555 - INFO - Anomaly ratio for TRX: 0.0200
+Retrieved 31 price points for tron.
+2025-08-11 16:35:56,518 - INFO - Liquidity Score for TRX (1-10): 4.7
+2025-08-11 16:35:57,934 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:36:13,934 - INFO - No GitHub link found for TRX on CoinGecko
+2025-08-11 16:36:19,423 - INFO - Retrieved: Cardano
+2025-08-11 16:36:21,514 - INFO - Anomaly ratio for ADA: 0.0600
+Error: 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/cardano/market_chart?vs_currency=usd&days=30&interval=daily
+Not enough data to compute.
+2025-08-11 16:36:22,225 - INFO - Liquidity Score for ADA (1-10): 2.7
+2025-08-11 16:36:22,512 - WARNING - Rate limit reached, trying again in 1 seconds
+2025-08-11 16:36:23,740 - WARNING - Rate limit reached, trying again in 2 seconds
+2025-08-11 16:36:25,967 - WARNING - Rate limit reached, trying again in 4 seconds
+2025-08-11 16:36:30,208 - WARNING - Rate limit reached, trying again in 8 seconds
+2025-08-11 16:36:38,442 - WARNING - Rate limit reached, trying again in 16 seconds
+2025-08-11 16:36:54,443 - INFO - No GitHub link found for ADA on CoinGecko
+results [{'#': '1', 'Name': 'Bitcoin', 'Current Price': '     121,690.44', '1h%': '-0.17', '24h%': '3.03', '7d%': '6.30', 'Market Cap': '2,422,219,929,153.73', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png', 'Symbol': 'BTC', 'Description': 'Bitcoin (BTC) is a cryptocurrency launched in 2010. Users are able to generate BTC through the process of mining. Bitcoin has a current supply of 19,904,768. The last known price of Bitcoin is 121,597.17892505 USD and is up 2.95 over the last 24 hours. It is currently trading on 12280 active market(s) with $76,351,327,018.62 traded over the last 24 hours. More information can be found at https://bitcoin.org/.', 'Creation Date': '2010-07-13', 'Website': 'https://bitcoin.org/', 'Source Code': 'https://github.com/bitcoin/bitcoin', 'Realized Volatility': 10, 'Liquidity and Order Book Depth': 6, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 6, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 69}, {'#': '2', 'Name': 'Ethereum', 'Current Price': '       4,275.60', '1h%': '-0.35', '24h%': '1.68', '7d%': '20.47', 'Market Cap': '516,103,186,496.09', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png', 'Symbol': 'ETH', 'Description': 'Ethereum (ETH) is a cryptocurrency . Ethereum has a current supply of 120,708,931.03940783. The last known price of Ethereum is 4,278.13632023 USD and is up 1.93 over the last 24 hours. It is currently trading on 10435 active market(s) with $34,636,057,282.13 traded over the last 24 hours. More information can be found at https://www.ethereum.org/.', 'Creation Date': '2015-08-07', 'Website': 'https://www.ethereum.org/', 'Source Code': 'https://github.com/ethereum/go-ethereum', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 6, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 10, 'Developer and Team Transparency': 1, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 66}, {'#': '3', 'Name': 'XRP', 'Current Price': ' 3.305473900444', '1h%': '1.14', '24h%': '3.65', '7d%': '9.87', 'Market Cap': '196,042,321,752.56', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png', 'Symbol': 'XRP', 'Description': 'XRP (XRP) is a cryptocurrency . XRP has a current supply of 99,985,880,506 with 59,308,385,925 in circulation. The last known price of XRP is 3.26595589 USD and is up 2.65 over the last 24 hours. It is currently trading on 1673 active market(s) with $5,718,718,821.79 traded over the last 24 hours. More information can be found at https://xrpl.org/.', 'Creation Date': '2013-08-04', 'Website': 'https://xrpl.org/', 'Source Code': 'https://github.com/ripple/rippled', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 2, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 10, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 51}, {'#': '4', 'Name': 'Tether USDt', 'Current Price': ' 0.999832429020', '1h%': '-0.01', '24h%': '-0.03', '7d%': '-0.02', 'Market Cap': '164,507,845,530.84', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png', 'Symbol': 'USDT', 'Description': 'Tether USDt (USDT) is a cryptocurrency and operates on the Ethereum platform. Tether USDt has a current supply of 167,783,241,643.79987224 with 164,535,416,891.97961889 in circulation. The last known price of Tether USDt is 0.99988671 USD and is down -0.01 over the last 24 hours. It is currently trading on 140833 active market(s) with $119,951,131,231.59 traded over the last 24 hours. More information can be found at https://tether.to.', 'Creation Date': '2015-02-25', 'Website': 'https://tether.to', 'Source Code': 'N/A', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 9, 'Exchange Listings and Reputation': 9, 'Transaction Patterns and Anomalies': 6, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 1, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 66}, {'#': '5', 'Name': 'BNB', 'Current Price': '         813.65', '1h%': '-0.48', '24h%': '1.52', '7d%': '7.40', 'Market Cap': '113,332,163,608.62', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png', 'Symbol': 'BNB', 'Description': 'BNB (BNB) is a cryptocurrency . BNB has a current supply of 139,287,952.92000002. The last known price of BNB is 812.65314966 USD and is up 1.69 over the last 24 hours. It is currently trading on 2660 active market(s) with $2,276,064,678.21 traded over the last 24 hours. More information can be found at https://bnbchain.org/en.', 'Creation Date': '2017-07-25', 'Website': 'https://bnbchain.org/en', 'Source Code': 'https://github.com/bnb-chain', 'Realized Volatility': 8, 'Liquidity and Order Book Depth': 4, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 9, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 62}, {'#': '6', 'Name': 'Solana', 'Current Price': '         183.44', '1h%': '-0.25', '24h%': '2.20', '7d%': '12.33', 'Market Cap': '98,974,156,926.35', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png', 'Symbol': 'SOL', 'Description': 'Solana (SOL) is a cryptocurrency launched in 2020. Solana has a current supply of 607,187,650.4817251 with 539,542,447.8850287 in circulation. The last known price of Solana is 183.2143501 USD and is up 2.26 over the last 24 hours. It is currently trading on 967 active market(s) with $6,099,060,184.37 traded over the last 24 hours. More information can be found at https://solana.com.', 'Creation Date': '2020-04-10', 'Website': 'https://solana.com', 'Source Code': 'https://github.com/solana-labs', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 4, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 10, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 56}, {'#': '7', 'Name': 'USDC', 'Current Price': ' 0.999789864788', '1h%': '-0.01', '24h%': '-0.02', '7d%': '-0.00', 'Market Cap': '65,136,362,281.67', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png', 'Symbol': 'USDC', 'Description': 'USDC (USDC) is a cryptocurrency launched in 2024and operates on the Ethereum platform. USDC has a current supply of 65,150,052,601.81119486. The last known price of USDC is 0.99983914 USD and is up -0.00 over the last 24 hours. It is currently trading on 30405 active market(s) with $13,851,979,697.61 traded over the last 24 hours. More information can be found at https://www.circle.com/en/usdc.', 'Creation Date': '2018-10-08', 'Website': 'https://www.circle.com/en/usdc', 'Source Code': 'https://github.com/centrehq/centre-tokens', 'Realized Volatility': 10, 'Liquidity and Order Book Depth': 8, 'Exchange Listings and Reputation': 8, 'Transaction Patterns and Anomalies': 6, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 1, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 75}, {'#': '8', 'Name': 'Dogecoin', 'Current Price': ' 0.234951708757', '1h%': '-0.47', '24h%': '0.99', '7d%': '15.89', 'Market Cap': '35,353,396,572.99', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/74.png', 'Symbol': 'DOGE', 'Description': 'Dogecoin (DOGE) is a cryptocurrency . Users are able to generate DOGE through the process of mining. Dogecoin has a current supply of 150,470,906,383.70521. The last known price of Dogecoin is 0.23441349 USD and is up 1.08 over the last 24 hours. It is currently trading on 1270 active market(s) with $2,252,901,108.04 traded over the last 24 hours. More information can be found at http://dogecoin.com/.', 'Creation Date': '2013-12-15', 'Website': 'http://dogecoin.com/', 'Source Code': 'https://github.com/dogecoin/dogecoin', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 4, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 10, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 56}, {'#': '9', 'Name': 'TRON', 'Current Price': ' 0.340459099058', '1h%': '-0.14', '24h%': '0.33', '7d%': '3.29', 'Market Cap': '32,240,692,722.58', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png', 'Symbol': 'TRX', 'Description': 'TRON (TRX) is a cryptocurrency . TRON has a current supply of 94,697,704,719.505518 with 94,697,697,349.929998 in circulation. The last known price of TRON is 0.34073296 USD and is up 0.71 over the last 24 hours. It is currently trading on 1212 active market(s) with $765,058,417.55 traded over the last 24 hours. More information can be found at https://trondao.org/.', 'Creation Date': '2017-09-13', 'Website': 'https://trondao.org/', 'Source Code': 'https://github.com/tronprotocol/java-tron', 'Realized Volatility': 9, 'Liquidity and Order Book Depth': 4, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 10, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 0, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 66}, {'#': '10', 'Name': 'Cardano', 'Current Price': ' 0.815947930739', '1h%': '-0.29', '24h%': '2.70', '7d%': '10.36', 'Market Cap': '28,906,855,795.55', 'Logo': 'https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png', 'Symbol': 'ADA', 'Description': 'Cardano (ADA) is a cryptocurrency launched in 2017. Cardano has a current supply of 44,990,971,191.627284 with 35,427,329,007.833823 in circulation. The last known price of Cardano is 0.81095732 USD and is up 2.33 over the last 24 hours. It is currently trading on 1561 active market(s) with $1,069,039,111.13 traded over the last 24 hours. More information can be found at https://www.cardano.org.', 'Creation Date': '2017-10-01', 'Website': 'https://www.cardano.org', 'Source Code': 'https://cardanoupdates.com/', 'Realized Volatility': 5, 'Liquidity and Order Book Depth': 2, 'Exchange Listings and Reputation': 10, 'Transaction Patterns and Anomalies': 8, 'Developer and Team Transparency': 0, 'Community and Social Media Presence': 1, 'Whitepaper and Roadmap Assessment': 1, 'Regulatory Compliance and Legal Standing': 0, 'Smart Contract Audit and Security Measures': 1, 'Total Score': 52}]
+2025-08-11 16:37:00,228 - INFO - Fetched 10 coins from CoinMarketCap
+✅ Data exported to app/assets/data/CMC_crypto_extended_2025-08-11_16-37-00.csv
+Invalid data format. Expected a list of dictionaries or tuples.
+read successfully
+2025-08-11 16:37:00,394 - INFO - CMC CSV file created: app/assets/data/CMC_crypto_extended_2025-08-11_16-37-00.csv
+2025-08-11 16:37:00,408 - INFO - === SANITY TEST PASSED ===
+
+2025-08-11 16:37:00,416 - INFO - === AUDIT TEST START ===
+2025-08-11 16:37:00,419 - INFO - Manual volatility: 1.54
+Retrieved 8 price points for bitcoin.
+2025-08-11 16:37:00,914 - INFO - Expected score threshold check: 10
+2025-08-11 16:37:00,915 - INFO - Synthetic anomaly fraction: 0.0000
+2025-08-11 16:37:00,915 - INFO - Weighted total score check: 68
+2025-08-11 16:37:00,915 - INFO - === AUDIT TEST PASSED ===
+
+2025-08-11 16:37:00,915 - INFO - All tests completed successfully.
