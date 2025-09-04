@@ -28,6 +28,14 @@ def update_score_window(window, data):
             canvas_elem = window[canvas_key]
             plg.draw_figure(canvas_elem, fig, canvas_key, chart_data, window, is_main_score_flag)
 
+def format_number(num):
+    num_str = str(num)
+
+    if len(num_str) == 2:
+        return "  " + num_str
+    elif len(num_str) == 1:
+        return "    " + num_str
+
 def main_score_graph_popup(window, chart_data):
     _, figure, chart_data, is_main_score = pie_charts[0]
     canvas_key_new = "-MAINSCORE-WINDOW-"
@@ -59,19 +67,19 @@ def update_risk_window(main_window, selected_coin, currency_choice):
     
     # Update Numerical Scores (update score and warning image/message)
     v_img, v_msg = get_warning_image(int(selected_coin[13])*10, 'volatility')
-    main_window['-VOLATILITY-'].update(f' {selected_coin[13]}')
+    main_window['-VOLATILITY-'].update(format_number(selected_coin[13]))
     main_window['-V-WIMG-'].update(filename=v_img)
     main_window['-V-WMSG-'].update(v_msg)
     l_img, l_msg = get_warning_image(int(selected_coin[14])*10, 'liquidity')
-    main_window['-LIQUIDITY-'].update(f' {selected_coin[14]}')
+    main_window['-LIQUIDITY-'].update(format_number(selected_coin[14]))
     main_window['-L-WIMG-'].update(filename=l_img)
     main_window['-L-WMSG-'].update(l_msg)
     e_img, e_msg = get_warning_image(int(selected_coin[15])*10, 'exchange')
-    main_window['-EXCHANGE-'].update(f' {selected_coin[15]}')
+    main_window['-EXCHANGE-'].update(format_number(selected_coin[15]))
     main_window['-E-WIMG-'].update(filename=e_img)
     main_window['-E-WMSG-'].update(e_msg)
     a_img, a_msg = get_warning_image(int(selected_coin[16])*10, 'anomaly')
-    main_window['-ANOMALY-'].update(f' {selected_coin[16]}')
+    main_window['-ANOMALY-'].update(format_number(selected_coin[16]))
     main_window['-A-WIMG-'].update(filename=a_img)
     main_window['-A-WMSG-'].update(a_msg)
 
@@ -369,18 +377,24 @@ def render_lower_content(data):
     logo_pad = ((0, 20), (0, 0))
     score_size = (3, 1)
     label_size = (25, 1)
+
     rv_bg     = "#ef476f"
     ol_bg     = '#ffd166'
     el_bg     = '#06d6a0'
     am_bg     = '#118ab2'
     binary_bg = "#2e4e5a"
 
+    rv_score = data[0][13]
+    ol_score = data[0][14]
+    el_score = data[0][15]
+    am_score = data[0][16]
+
     realized_volatility = [
         [
             sg.Text('REALIZED VOLATILITY', font=title_font, pad=((12, 0), (10, 0)), background_color=rv_bg, size=title_size, key='-CATEGORY0-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(f' {data[0][13]}', font=score_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=sc_text, key='-VOLATILITY-', enable_events=True),
+            sg.Text(format_number(rv_score), font=score_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=sc_text, key='-VOLATILITY-', enable_events=True),
             sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=rv_bg, size=score_size, text_color=ov_text, key='-VOLATILITY1-', enable_events=True),
             sg.Image(filename='app/assets/images/volatility.png', pad=logo_pad, background_color=rv_bg, key='-RV-IMAGE-', enable_events=True)    
         ],
@@ -395,7 +409,7 @@ def render_lower_content(data):
             sg.Text('LIQUIDITY AND ORDER BOOK DEPTH', font=title_font, pad=((12, 0), (10, 0)), background_color=ol_bg, size=title_size, key='-CATEGORY1-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(f' {data[0][14]}', font=score_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=sc_text, key='-LIQUIDITY-', enable_events=True),
+            sg.Text(format_number(ol_score), font=score_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=sc_text, key='-LIQUIDITY-', enable_events=True),
             sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=ol_bg, size=score_size, text_color=ov_text, key='-LIQUIDITY1-', enable_events=True),
             sg.Image(filename='app/assets/images/liquidity.png', pad=logo_pad, background_color=ol_bg, key='-OL-IMAGE-', enable_events=True)    
         ],
@@ -410,7 +424,7 @@ def render_lower_content(data):
             sg.Text('EXCHANGE LISTINGS AND REPUTATION', font=title_font, pad=((12, 0), (10, 0)), background_color=el_bg, size=title_size, key='-CATEGORY2-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(f' {data[0][15]}', font=score_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=sc_text, key='-EXCHANGE-', enable_events=True),
+            sg.Text(format_number(el_score), font=score_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=sc_text, key='-EXCHANGE-', enable_events=True),
             sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=el_bg, size=score_size, text_color=ov_text, key='-EXCHANGE1-', enable_events=True),
             sg.Image(filename='app/assets/images/exchange.png', pad=logo_pad, background_color=el_bg, key='-EL-IMAGE-', enable_events=True)    
         ],
@@ -425,7 +439,7 @@ def render_lower_content(data):
             sg.Text('TRANSACTION PATTERNS AND ANOMALIES', font=title_font, pad=((12, 0), (10, 0)), background_color=am_bg, size=title_size, key='-CATEGORY3-', text_color=sc_text, enable_events=True)
         ],
         [
-            sg.Text(f' {data[0][16]}', font=score_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=sc_text, key='-ANOMALY-', enable_events=True),
+            sg.Text(format_number(am_score), font=score_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=sc_text, key='-ANOMALY-', enable_events=True),
             sg.Text('/10', font=over_font, pad=((0, 0), (0, 0)), background_color=am_bg, size=score_size, text_color=ov_text, key='-ANOMALY1-', enable_events=True),
             sg.Image(filename='app/assets/images/anomaly.png', pad=logo_pad, background_color=am_bg, key='-AP-IMAGE-', enable_events=True)    
         ],
